@@ -1,0 +1,29 @@
+﻿@model List<Course>
+@{
+    ViewData["Title"] = "All Courses";
+}
+<h2>All Courses</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course ID</th>
+            <th>Course Name</th>
+            <th>Course Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.ID</td>
+                <td>@course.Name</td>
+                <td>@course.Description</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@course.ID">Edit</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@course.ID">Delete</a>
+                </td>
+			</tr>
+            
+        }
+    </tbody>
