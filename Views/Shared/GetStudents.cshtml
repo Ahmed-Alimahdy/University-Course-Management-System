@@ -1,0 +1,42 @@
+﻿@model List<universityManagementSys.Models.Student>
+
+@{
+    ViewData["Title"] = "Students List";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">
+        @ViewBag.NoDataMessage ?? "No students available."
+    </div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model)
+            {
+                <tr>
+                    <td>@student.ID</td>
+                    <td>@student.FirstName</td>
+                    <td>@student.LastName</td>
+                    <td>@student.Email</td>
+                    <td>@student.PhoneNum</td>
+                    <td>@student.Department?.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

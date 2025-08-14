@@ -15,12 +15,15 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllCourses()
         {
+            
             var courses = _context.courses.ToList();
+            ViewData["PageTitle"] = "Get all courses";
+            ViewData["Courses"] = courses;
             if (courses == null || !courses.Any())
             {
                 return NotFound();
             }
-            return View(courses);
+            return View(ViewData);
         }
         public IActionResult GetCourseByID(int id)
         {
@@ -79,12 +82,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Create Course",
-                WelcomeMessage = "Welcome to the Course Creation Page",
-            };
-            return View(modelView);
+            return View();
         }
         public IActionResult CreateCourse(Course course)
         {

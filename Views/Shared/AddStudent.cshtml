@@ -1,0 +1,54 @@
+﻿@model universityManagementSys.ModelView.StudentViewModel
+
+@{
+    ViewData["Title"] = Model.PageTitle;
+}
+
+<h2>@Model.PageTitle</h2>
+<p>@Model.WelcomeMessage</p>
+
+<form asp-action="CreateStudent" method="post">
+    <div class="form-group">
+        <label asp-for="student.FirstName"></label>
+        <input asp-for="student.FirstName" class="form-control" />
+        <span asp-validation-for="student.FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="student.LastName"></label>
+        <input asp-for="student.LastName" class="form-control" />
+        <span asp-validation-for="student.LastName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="student.DateOfBirth"></label>
+        <input asp-for="student.DateOfBirth" type="date" class="form-control" />
+        <span asp-validation-for="student.DateOfBirth" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="student.Email"></label>
+        <input asp-for="student.Email" type="email" class="form-control" />
+        <span asp-validation-for="student.Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="student.PhoneNum"></label>
+        <input asp-for="student.PhoneNum" class="form-control" />
+        <span asp-validation-for="student.PhoneNum" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="student.DepartmentID">Department</label>
+        <input asp-for="student.DepartmentID" class="form-control" />
+        <span asp-validation-for="student.DepartmentID" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Student</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

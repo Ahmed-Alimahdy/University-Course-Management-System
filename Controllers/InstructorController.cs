@@ -15,12 +15,16 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllInstructors()
         {
+    
             var instructors = _context.instructors.ToList();
+            ViewBag.PageTitle = "Add Instructor";
+            ViewBag.WelcomeMessage = "Welcome to the instructor add Page";
+            ViewBag.instructors = instructors;
             if (instructors == null || !instructors.Any())
             {
                 return NotFound();
             }
-            return View(instructors);
+            return View(ViewBag);
            
         }
         public IActionResult GetInstructorById(int id)
@@ -46,12 +50,9 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Create Instructor",
-                WelcomeMessage = "Welcome to the Instructor Creation Page",
-            };
-            return View(modelView);
+            ViewBag.PageTitle = "Add Instructor";
+            ViewBag.WelcomeMessage = "Welcome to the instructor add Page";
+            return View();
         }
         public IActionResult CreateInstructor(Instructor instructor)
         {
@@ -63,6 +64,7 @@ namespace universityManagementSys.Controllers
         public IActionResult Edit(int id)
         {
             var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
+         
             if (instructor == null)
             {
                 return NotFound();
@@ -78,11 +80,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Delete(int id)
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Delete Instructor",
-                WelcomeMessage = "Welcome to the Instructor Deletion Page",
-            };
+  
             var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
             if (instructor == null)
             {

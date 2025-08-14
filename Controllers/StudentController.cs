@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -17,12 +18,15 @@ namespace universityManagementSys.Controllers
         public IActionResult GetAllStudents()
         {
             var students = _context.students.ToList();
-            if (students == null || !students.Any())
+            if (_context.students.IsNullOrEmpty())
             {
-                return NotFound();
+                students = null;
             }
-            return View(students);
+            ViewBag.NoDataMessage = !students.Any() ? "No students found." : null;
+            return View("GetStudents",students);
         }
+
+
         public IActionResult GetStudentByID(int id)
         {
             var student = _context.students.FirstOrDefault(s => s.ID == id);
@@ -69,27 +73,24 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
+            StudentViewModel modelView = new StudentViewModel
             {
-                PageTitle = "Create Student",
-                WelcomeMessage = "Welcome to the Student Creation Page",
+                PageTitle = "Add Student",
+                WelcomeMessage = "Welcome to the add Student Page",
             };
-            return View(modelView);
+            return View("AddStudent",modelView);
         }
-        public IActionResult CreateStudent(Student student)
+        public IActionResult CreateStudent(StudentViewModel studentViewModel)
         {
-            _context.students.Add(student);
+           
+            _context.students.Add(studentViewModel.student);
             _context.SaveChanges();
             TempData["Success"] = "Student added successfully!";
             return RedirectToAction("GetAllStudents");
         }
         public IActionResult Edit(int id)
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Edit Student",
-                WelcomeMessage = "Welcome to the Student Edit Page",
-            };
+          
             var student = _context.students.FirstOrDefault(s => s.ID == id);
             if (student == null)
             {

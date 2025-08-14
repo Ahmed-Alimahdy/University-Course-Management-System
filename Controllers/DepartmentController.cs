@@ -59,12 +59,7 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Create Department",
-                WelcomeMessage = "Welcome to the Department Creation Page",
-            };
-            return View(modelView);
+            return View();
         }
         public IActionResult CreateDepartment(Department department)
         {
