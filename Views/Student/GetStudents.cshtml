@@ -35,6 +35,19 @@ else
                     <td>@student.Email</td>
                     <td>@student.PhoneNum</td>
                     <td>@student.Department?.Name</td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@student.ID"
+                           class="btn btn-danger btn-sm">
+                            Delete
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@student.ID"
+                           class="btn btn-primary btn-sm">
+                            Edit
+                        </a>
+                    </td>
+
                 </tr>
             }
         </tbody>

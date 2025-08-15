@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
@@ -17,24 +19,36 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllStudents()
         {
-            var students = _context.students.ToList();
+            var students = _context.students
+             .Include(s => s.Department)
+              .ToList();
             if (_context.students.IsNullOrEmpty())
             {
                 students = null;
             }
-            ViewBag.NoDataMessage = !students.Any() ? "No students found." : null;
+            ViewBag.NoDataMessage = !students.Any() ? "No students found." : " ";
             return View("GetStudents",students);
         }
 
+        public IActionResult GetIdtoSearch()
+        {
+            StudentViewModel modelView = new StudentViewModel
+            {
+                PageTitle = "Search Student",
+                WelcomeMessage = "Welcome to the search Student Page",
+            };
+            return View("GetStudentIdtoSearch", modelView);
+        }
 
         public IActionResult GetStudentByID(int id)
         {
             var student = _context.students.FirstOrDefault(s => s.ID == id);
             if (student == null)
             {
-                return NotFound();
+                TempData["Error"] = "No student found with this ID.";
+                return View("GetStudentByID");
             }
-            return View(student);
+            return View("GetStudentByID",student);
         }
         public IActionResult GetAllStudentsByCourseID(int id)
         {
@@ -73,31 +87,51 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            StudentViewModel modelView = new StudentViewModel
+            var departments = _context.departments
+                .Select(d => new { d.ID, d.Name })
+                .ToList();
+
+            ViewBag.Departments = new SelectList(departments, "ID", "Name");
+
+            var model = new StudentViewModel
             {
-                PageTitle = "Add Student",
-                WelcomeMessage = "Welcome to the add Student Page",
+                PageTitle = "Create Student",
+                WelcomeMessage = "Please fill in the student details.",
+                student = new Student()
             };
-            return View("AddStudent",modelView);
+
+            return View("AddStudent", model);
         }
-        public IActionResult CreateStudent(StudentViewModel studentViewModel)
+
+        public IActionResult CreateStudent(Student student)
         {
-           
-            _context.students.Add(studentViewModel.student);
-            _context.SaveChanges();
-            TempData["Success"] = "Student added successfully!";
-            return RedirectToAction("GetAllStudents");
+                _context.students.Add(student);
+                _context.SaveChanges();
+                TempData["Success"] = "Student added successfully!";
+                return RedirectToAction("GetAllStudents");
         }
         public IActionResult Edit(int id)
         {
-          
-            var student = _context.students.FirstOrDefault(s => s.ID == id);
-            if (student == null)
+            var student = _context.students
+                .Include(s => s.Department)
+                .FirstOrDefault(s => s.ID == id);
+
+            var departments = _context.departments
+                .Select(d => new { d.ID, d.Name })
+                .ToList();
+
+            ViewBag.Departments = new SelectList(departments, "ID", "Name", student.DepartmentID);
+
+            var model = new StudentViewModel
             {
-                return NotFound();
-            }
-            return View(student);
+                PageTitle = "Edit Student",
+                WelcomeMessage = "Please update the student details.",
+                student = student
+            };
+
+            return View("EditStudent", model);
         }
+
         public IActionResult EditStudent(Student student)
         {
             _context.students.Update(student);
@@ -113,7 +147,7 @@ namespace universityManagementSys.Controllers
             {
                 return NotFound();
             }
-            return View(student);
+            return View("DeleteStudent",student);
         }
         public IActionResult DeleteStudentConfirmed(int id)
         {
