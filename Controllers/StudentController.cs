@@ -32,17 +32,25 @@ namespace universityManagementSys.Controllers
 
         public IActionResult GetIdtoSearch()
         {
-            StudentViewModel modelView = new StudentViewModel
+            ViewBag.functionName = "GetStudentByID";
+            ViewModel modelView = new ViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
             };
             return View("GetStudentIdtoSearch", modelView);
         }
-
         public IActionResult GetStudentByID(int id)
         {
-            var student = _context.students.FirstOrDefault(s => s.ID == id);
+            var student = _context.students
+    .Include(s => s.Department)
+    .Include(s => s.Enrollments)
+        .ThenInclude(e => e.Course)
+            .ThenInclude(c => c.Instructor)
+    .Include(s => s.Enrollments)
+        .ThenInclude(e => e.Course.Semester)
+    .FirstOrDefault(s => s.ID == id);
+
             if (student == null)
             {
                 TempData["Error"] = "No student found with this ID.";
@@ -50,18 +58,93 @@ namespace universityManagementSys.Controllers
             }
             return View("GetStudentByID",student);
         }
-        public IActionResult GetAllStudentsByCourseID(int id)
+        public IActionResult GetIdtoAssign()
         {
-            var students = _context.enrollments
-                .Where(e => e.CourseID == id)
-                .Select(e => e.Student)
-                .ToList();
-            if (students == null || !students.Any())
+            ViewBag.functionName = "AssignCourseToStudent";
+            ViewModel modelView = new ViewModel
+            {
+                PageTitle = "Search Student",
+                WelcomeMessage = "Welcome to the search Student Page",
+            };
+            return View("GetStudentIdtoSearch", modelView);
+        }
+        public IActionResult AssignCourseToStudent(int id)
+        {
+            var student = _context.students
+                .Include(s => s.Enrollments)
+                .FirstOrDefault(s => s.ID == id);
+            if (student == null)
             {
                 return NotFound();
             }
-            return View(students);
+            var courses = _context.courses
+                .Select(c => new { c.ID, c.Name })
+                .ToList();
+            ViewBag.Courses = new SelectList(courses, "ID", "Name");
+            var model = new ViewModel
+            {
+                PageTitle = "Assign Course to Student",
+                WelcomeMessage = "Please select a course to assign to the student.",
+                student = student
+            };
+            return View("AssignCourse", model);
         }
+        public IActionResult AssignCourseToStudentPost(int StudentID, int CourseID)
+        {
+            var enrollment = new Enrollment
+            {
+                StudentID = StudentID,
+                CourseID = CourseID
+            };
+
+            _context.enrollments.Add(enrollment);
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                TempData["Error"] = "This course is already assigned to the student!";
+                return RedirectToAction("AssignCourseToStudent", new { id = StudentID });
+            }
+
+            TempData["Success"] = "Course assigned successfully!";
+            return RedirectToAction("GetAllStudents");
+        }
+        public IActionResult GetCourseId()
+        {
+            return View("GetCourseId");
+        }
+        public IActionResult GetAllStudentsByCourseID(int id)
+        {
+            var course = _context.courses
+                .Include(c => c.Instructor)
+                .Include(c => c.Semester)
+                .FirstOrDefault(c => c.ID == id);
+
+            if (course == null)
+            {
+                TempData["Error"] = "No course found with this ID.";
+                return RedirectToAction("GetCourseId");
+            }
+
+            var students = _context.enrollments
+    .Where(e => e.CourseID == id)
+    .Include(e => e.Student)
+        .ThenInclude(s => s.Department)
+    .Select(e => e.Student)
+    .ToList();
+
+
+            var vm = new ViewModel
+            {
+                course = course,
+                students = students
+            };
+
+            return View("GetStudentByCourseId", vm);
+        }
+
         public IActionResult GetAllStudentsByDepartmentID(int id)
         {
             var students = _context.students
@@ -93,7 +176,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name");
 
-            var model = new StudentViewModel
+            var model = new ViewModel
             {
                 PageTitle = "Create Student",
                 WelcomeMessage = "Please fill in the student details.",
@@ -122,7 +205,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name", student.DepartmentID);
 
-            var model = new StudentViewModel
+            var model = new ViewModel
             {
                 PageTitle = "Edit Student",
                 WelcomeMessage = "Please update the student details.",

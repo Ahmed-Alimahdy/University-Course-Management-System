@@ -1,4 +1,4 @@
-﻿@model universityManagementSys.ModelView.StudentViewModel
+﻿@model universityManagementSys.ModelView.ViewModel
 
 @{
     ViewData["Title"] = "Edit Student";
@@ -7,7 +7,7 @@
 <h2>Edit Student</h2>
 
 <form asp-action="EditStudent" method="post">
-    @* Hidden field for the ID *@
+   
     <input type="hidden" asp-for="student.ID" />
 
     <div class="form-group">
@@ -53,6 +53,10 @@
 
     <button type="submit" class="btn btn-primary">Update Student</button>
     <a asp-action="GetAllStudents" class="btn btn-secondary">Cancel</a>
+    <a asp-action="AssignCourseToStudent" asp-route-id=@Model.student.ID
+       class="btn btn-primary btn-sm">
+        Assign course
+    </a>
 </form>
 
 @section Scripts {

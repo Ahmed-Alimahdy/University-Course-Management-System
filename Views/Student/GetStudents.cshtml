@@ -48,8 +48,19 @@ else
                         </a>
                     </td>
 
+                    <td>
+                        <a asp-action="GetStudentById" asp-route-id="@student.ID"
+                           class="btn btn-success btn-sm">
+                            Details
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+    <div class="text-center mt-3">
+        <a asp-action="Create" class="btn btn-primary">Add new student</a>
+        <a asp-action="GetCourseId" class="btn btn-primary">Search by Course ID</a>
+    </div>
+    
 }

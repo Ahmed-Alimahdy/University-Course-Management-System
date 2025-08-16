@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -15,17 +17,15 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllInstructors()
         {
-    
-            var instructors = _context.instructors.ToList();
-            ViewBag.PageTitle = "Add Instructor";
-            ViewBag.WelcomeMessage = "Welcome to the instructor add Page";
-            ViewBag.instructors = instructors;
-            if (instructors == null || !instructors.Any())
+
+            var instructors = _context.instructors
+              .ToList();
+            if (_context.students.IsNullOrEmpty())
             {
-                return NotFound();
+                instructors = null;
             }
-            return View(ViewBag);
-           
+            ViewBag.NoDataMessage = !instructors.Any() ? "No instructors found." : " ";
+            return View("GetInstructors", instructors);
         }
         public IActionResult GetInstructorById(int id)
         {
@@ -50,9 +50,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            ViewBag.PageTitle = "Add Instructor";
-            ViewBag.WelcomeMessage = "Welcome to the instructor add Page";
-            return View();
+            var model = new ViewModel
+            {
+                PageTitle = "Add instructor",
+                WelcomeMessage = "Please fill in the instructor details.",
+                instructor = new Instructor()
+            };
+
+            return View("AddInstructor", model);
         }
         public IActionResult CreateInstructor(Instructor instructor)
         {

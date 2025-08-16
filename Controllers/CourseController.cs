@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -19,11 +21,11 @@ namespace universityManagementSys.Controllers
             var courses = _context.courses.ToList();
             ViewData["PageTitle"] = "Get all courses";
             ViewData["Courses"] = courses;
-            if (courses == null || !courses.Any())
+            if (_context.students.IsNullOrEmpty())
             {
-                return NotFound();
+                courses = null;
             }
-            return View(ViewData);
+            return View("AllCourses",courses);
         }
         public IActionResult GetCourseByID(int id)
         {
@@ -82,7 +84,33 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            return View();
+            var instructors = _context.instructors
+                 .Select(d => new { d.ID, d.FirstName,d.LastName })
+                 .ToList();
+
+            var semesters = _context.semesters
+                 .Select(d => new { d.ID, d.Name })
+                 .ToList();
+
+            ViewBag.Instructors = new SelectList(
+         instructors.Select(i => new {
+             i.ID,
+             FullName = i.FirstName + " " + i.LastName
+         }),
+         "ID",
+         "FullName"
+     );
+
+            ViewBag.Semester = new SelectList(semesters, "ID", "Name");
+
+
+            ViewModel viewModel = new ViewModel
+            {
+                PageTitle = "Add Course",
+                WelcomeMessage = "Please fill in the course details.",
+                course = new Course()
+            };
+            return View("AddCourse", viewModel);
         }
         public IActionResult CreateCourse(Course course)
         {
