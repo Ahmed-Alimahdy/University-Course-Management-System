@@ -21,10 +21,10 @@ namespace universityManagementSys.Controllers
             var courses = _context.courses.ToList();
             ViewData["PageTitle"] = "Get all courses";
             ViewData["Courses"] = courses;
-            if (_context.students.IsNullOrEmpty())
-            {
-                courses = null;
-            }
+            //if (_context.students.)
+            //{
+            //    courses = null;
+            //}
             return View("AllCourses",courses);
         }
         public IActionResult GetCourseByID(int id)
