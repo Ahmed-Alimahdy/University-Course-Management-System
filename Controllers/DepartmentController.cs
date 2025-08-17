@@ -20,7 +20,7 @@ namespace universityManagementSys.wwwroot
             {
                 return NotFound();
             }
-            return View(departments);
+            return View("GetDepartments",departments);
         }
         public IActionResult GetDepartmentByID(int id)
         {
@@ -59,12 +59,7 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Create Department",
-                WelcomeMessage = "Welcome to the Department Creation Page",
-            };
-            return View(modelView);
+            return View("AddDepartment");
         }
         public IActionResult CreateDepartment(Department department)
         {

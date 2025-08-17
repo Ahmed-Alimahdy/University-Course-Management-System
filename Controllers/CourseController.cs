@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -15,12 +17,15 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllCourses()
         {
+            
             var courses = _context.courses.ToList();
-            if (courses == null || !courses.Any())
-            {
-                return NotFound();
-            }
-            return View(courses);
+            ViewData["PageTitle"] = "Get all courses";
+            ViewData["Courses"] = courses;
+            //if (_context.students.)
+            //{
+            //    courses = null;
+            //}
+            return View("AllCourses",courses);
         }
         public IActionResult GetCourseByID(int id)
         {
@@ -79,12 +84,33 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
+            var instructors = _context.instructors
+                 .Select(d => new { d.ID, d.FirstName,d.LastName })
+                 .ToList();
+
+            var semesters = _context.semesters
+                 .Select(d => new { d.ID, d.Name })
+                 .ToList();
+
+            ViewBag.Instructors = new SelectList(
+         instructors.Select(i => new {
+             i.ID,
+             FullName = i.FirstName + " " + i.LastName
+         }),
+         "ID",
+         "FullName"
+     );
+
+            ViewBag.Semester = new SelectList(semesters, "ID", "Name");
+
+
+            ViewModel viewModel = new ViewModel
             {
-                PageTitle = "Create Course",
-                WelcomeMessage = "Welcome to the Course Creation Page",
+                PageTitle = "Add Course",
+                WelcomeMessage = "Please fill in the course details.",
+                course = new Course()
             };
-            return View(modelView);
+            return View("AddCourse", viewModel);
         }
         public IActionResult CreateCourse(Course course)
         {

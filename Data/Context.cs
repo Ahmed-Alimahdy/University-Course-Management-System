@@ -16,7 +16,16 @@ namespace universityManagementSys.Data
         public DbSet<Semester> semesters { get; set; }
         public DbSet<DepartmentCourse> departmentCourses { get; set; }
         public DbSet<Enrollment> enrollments { get; set; }
-
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(
+                "Data Source=(localdb)\\MSSQLLocalDB;" + 
+                "Initial Catalog=test1;" +               
+                "Integrated Security=True;" +            
+                "Encrypt=False;" +
+                "TrustServerCertificate=True"
+            );
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Student>()
@@ -26,9 +35,8 @@ namespace universityManagementSys.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Student>()
-                .Property("ID")
-                .ValueGeneratedOnAdd()
-                .HasDefaultValue(0);
+                .Property(s => s.ID)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<Instructor>()
                 .HasMany(i => i.Courses)

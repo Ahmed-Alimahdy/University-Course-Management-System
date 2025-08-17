@@ -1,0 +1,46 @@
+﻿@model universityManagementSys.ModelView.ViewModel
+
+@{
+    ViewData["Title"] = "Add Semester";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<form asp-action="AddSemester" method="post">
+
+    <div class="form-group">
+        <label asp-for="semester.Name" class="control-label"></label>
+        <input asp-for="semester.Name" class="form-control" />
+        <span asp-validation-for="semester.Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="semester.StartDate"></label>
+        <input asp-for="semester.StartDate" type="date" class="form-control" />
+        <span asp-validation-for="semester.StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="semester.EndDate"></label>
+        <input asp-for="semester.EndDate" type="date" class="form-control" />
+        <span asp-validation-for="semester.EndDate" class="text-danger"></span>
+    </div>
+
+    
+    <br />
+    <button type="submit" class="btn btn-primary">Add</button>
+    <a asp-action="GetAllSemesters" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

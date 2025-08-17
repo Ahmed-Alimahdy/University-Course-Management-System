@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace universityManagementSys.Migrations
 {
     /// <inheritdoc />
-    public partial class intialDB : Migration
+    public partial class YallaYabnAlcomputer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,7 +75,8 @@ namespace universityManagementSys.Migrations
                 name: "students",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),

@@ -1,0 +1,34 @@
+﻿@model IEnumerable<universityManagementSys.Models.Department>
+
+@{
+    ViewData["Title"] = "All Departments";
+}
+
+<h2>All Departments</h2>
+
+@if (ViewBag.NoDataMessage != null)
+{
+    <div class="alert alert-warning">@ViewBag.NoDataMessage</div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Department ID</th>
+                <th>Department Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dept in Model)
+            {
+                <tr>
+                    <td>@dept.ID</td>
+                    <td>@dept.Name</td>
+                    <td>@dept.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -12,8 +12,8 @@ using universityManagementSys.Data;
 namespace universityManagementSys.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250813173120_intialDB")]
-    partial class intialDB
+    [Migration("20250815130201_YallaYabnAlcomputer")]
+    partial class YallaYabnAlcomputer
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -195,8 +195,9 @@ namespace universityManagementSys.Migrations
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");

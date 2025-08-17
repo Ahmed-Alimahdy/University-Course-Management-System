@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -15,13 +17,15 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllInstructors()
         {
-            var instructors = _context.instructors.ToList();
-            if (instructors == null || !instructors.Any())
+
+            var instructors = _context.instructors
+              .ToList();
+            if (_context.students.IsNullOrEmpty())
             {
-                return NotFound();
+                instructors = null;
             }
-            return View(instructors);
-           
+            ViewBag.NoDataMessage = !instructors.Any() ? "No instructors found." : " ";
+            return View("GetInstructors", instructors);
         }
         public IActionResult GetInstructorById(int id)
         {
@@ -46,12 +50,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            ViewModel modelView = new ViewModel
+            var model = new ViewModel
             {
-                PageTitle = "Create Instructor",
-                WelcomeMessage = "Welcome to the Instructor Creation Page",
+                PageTitle = "Add instructor",
+                WelcomeMessage = "Please fill in the instructor details.",
+                instructor = new Instructor()
             };
-            return View(modelView);
+
+            return View("AddInstructor", model);
         }
         public IActionResult CreateInstructor(Instructor instructor)
         {
@@ -63,6 +69,7 @@ namespace universityManagementSys.Controllers
         public IActionResult Edit(int id)
         {
             var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
+         
             if (instructor == null)
             {
                 return NotFound();
@@ -78,11 +85,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Delete(int id)
         {
-            ViewModel modelView = new ViewModel
-            {
-                PageTitle = "Delete Instructor",
-                WelcomeMessage = "Welcome to the Instructor Deletion Page",
-            };
+  
             var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
             if (instructor == null)
             {
