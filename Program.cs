@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using universityManagementSys.Data;
+using universityManagementSys.Models;
 
 namespace universityManagementSys
 {
@@ -7,7 +8,8 @@ namespace universityManagementSys
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            
+                var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
