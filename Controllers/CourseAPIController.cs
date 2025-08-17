@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using universityManagementSys.DTOs;
+using universityManagementSys.ApiService.DTOs;
 using universityManagementSys.Models;
 using universityManagementSys.Services;
 

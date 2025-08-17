@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using universityManagementSys.Models;
 
-namespace universityManagementSys.DTOs
+namespace universityManagementSys.ApiService.DTOs
 {
     public class CoursesMapper: Profile
     {

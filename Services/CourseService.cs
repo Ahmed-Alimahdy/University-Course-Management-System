@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using universityManagementSys.Data;
-using universityManagementSys.DTOs;
+using universityManagementSys.ApiService.DTOs;
 using universityManagementSys.Models;
 
 namespace universityManagementSys.Services
