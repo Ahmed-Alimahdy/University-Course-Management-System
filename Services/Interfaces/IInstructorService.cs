@@ -1,7 +1,7 @@
-﻿using universityManagementSys.ApiService.DTOs;
+﻿using universityManagementSys.DTOs.Instructors;
 using universityManagementSys.Models;
 
-namespace universityManagementSys.ApiService.Service
+namespace universityManagementSys.Services.Interfaces
 {
     public interface IInstructorService
     {

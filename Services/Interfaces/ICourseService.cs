@@ -1,6 +1,7 @@
-﻿using universityManagementSys.Models;
+﻿using universityManagementSys.DTOs.Courses;
+using universityManagementSys.Models;
 
-namespace universityManagementSys.ApiService.DTOs
+namespace universityManagementSys.Services.Interfaces
 {
     public interface ICourseService
     {

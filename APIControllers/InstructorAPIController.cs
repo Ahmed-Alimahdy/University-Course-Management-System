@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using universityManagementSys.ApiService.DTOs;
-using universityManagementSys.ApiService.Service;
+using universityManagementSys.DTOs.Instructors;
 using universityManagementSys.Models;
+using universityManagementSys.Services.Interfaces;
 
-namespace universityManagementSys.ApiService.Controllers
+namespace universityManagementSys.APIControllers
 {
     [Route("api/[controller]")]
     [ApiController]

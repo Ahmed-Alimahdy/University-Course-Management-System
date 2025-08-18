@@ -4,14 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using universityManagementSys.ApiServices.DTOs;
+using universityManagementSys.DTOs.Students;
 using universityManagementSys.Data;
-using universityManagementSys.DTOs;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
-using universityManagementSys.Services;
+using universityManagementSys.Services.Interfaces;
 
-namespace universityManagementSys.Controllers
+namespace universityManagementSys.APIControllers
 {
     [Route("api/[controller]")]
     [ApiController]

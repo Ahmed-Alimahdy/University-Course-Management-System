@@ -20,10 +20,7 @@ namespace universityManagementSys.Controllers
 
             var instructors = _context.instructors
               .ToList();
-            if (_context.students.IsNullOrEmpty())
-            {
-                instructors = null;
-            }
+
             ViewBag.NoDataMessage = !instructors.Any() ? "No instructors found." : " ";
             return View("GetInstructors", instructors);
         }

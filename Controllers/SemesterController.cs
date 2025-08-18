@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
@@ -17,10 +18,7 @@ namespace universityManagementSys.Controllers
         {
             var semesters = _context.semesters
                .ToList();
-            if (_context.students.IsNullOrEmpty())
-            {
-                semesters = null;
-            }
+
             ViewBag.NoDataMessage = !semesters.Any() ? "No Semesters found." : " ";
             return View("GetSemesters", semesters);
         }

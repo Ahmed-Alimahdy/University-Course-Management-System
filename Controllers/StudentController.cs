@@ -22,10 +22,7 @@ namespace universityManagementSys.Controllers
             var students = _context.students
              .Include(s => s.Department)
               .ToList();
-            if (_context.students.IsNullOrEmpty())
-            {
-                students = null;
-            }
+
             ViewBag.NoDataMessage = !students.Any() ? "No students found." : " ";
             return View("GetStudents",students);
         }

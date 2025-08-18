@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using universityManagementSys.ApiServices.DTOs;
-using universityManagementSys.DTOs;
+using universityManagementSys.DTOs.Students;
 using universityManagementSys.Models;
 
-namespace universityManagementSys.Services
+namespace universityManagementSys.Services.Interfaces
 {
     public interface IStudentService
     {

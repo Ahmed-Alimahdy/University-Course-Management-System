@@ -1,67 +1,66 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using universityManagementSys.ApiServices.DTOs;
 using universityManagementSys.Data;
-using universityManagementSys.DTOs;
+using universityManagementSys.DTOs.Courses;
+using universityManagementSys.DTOs.Students;
 using universityManagementSys.Models;
+using universityManagementSys.Repositories.Interfaces;
+using universityManagementSys.Services.Interfaces;
 
-namespace universityManagementSys.Services
+namespace universityManagementSys.Services.Implementations
 {
     public class StudentService : IStudentService
     {
-        Context _context;
-        IMapper _mapper;
-        public StudentService(Context context, IMapper mapper)
+        private readonly IStudentRepository _studentRepo;
+        private readonly IMapper _mapper;
+
+        public StudentService(IStudentRepository student, IMapper mapper)
         {
-            _context = context;
+            _studentRepo = student;
             _mapper = mapper;
         }
 
         async Task<int> IStudentService.CreateStudent(CreateStudentDto studentDto)
         {
             var student = _mapper.Map<Student>(studentDto);
-            _context.students.Add(student);
-            await _context.SaveChangesAsync();
+
+            await _studentRepo.AddAsync(student);
             return student.ID;
         }
 
         async Task<bool> IStudentService.UpdateStudent(int studentId, UpdateStudentDto studentDto)
         {
-            var student = await _context.students.FindAsync(studentId);
+            var student = await _studentRepo.GetByIdAsync(studentId);
+
             if (student == null)
             {
                 return false;
             }
             if (student.Email != studentDto.Email) // CHECK IF THERE ARE EMAIL WITH THE SAME EMAIL THAT HAS BEEN EDITED
-            { 
-                var collision = await _context.students.FirstOrDefaultAsync(u => u.Email == studentDto.Email); // TO USE IT LATER
+            {
+                var collision = await _studentRepo.GetByEmailAsync(studentDto.Email); // TO USE IT LATER
                 if (collision != null) 
                     return false; 
             }
+
             _mapper.Map(studentDto, student);
-            _context.students.Update(student);
-            await _context.SaveChangesAsync();
+            
+            await _studentRepo.UpdateAsync(student);
+
             return true;
         }
         async Task<bool> IStudentService.DeleteStudent(int studentId)
         {
-            var student = await _context.students.FindAsync(studentId);
-            if (student == null)
-            {
-                return false;
-            }
-            _context.students.Remove(student);
-            await _context.SaveChangesAsync();
-            return true;
+            return await _studentRepo.DeleteAsync(studentId);
         }
 
         async Task<IEnumerable<Student>> IStudentService.GetAllStudents()
         {
-            return await _context.students.ToListAsync();
+            return await _studentRepo.GetAllAsync();
         }
         async Task<Student?> IStudentService.GetById(int id)
         {
-            return await _context.students.FindAsync(id);
+            return await _studentRepo.GetByIdAsync(id);
         }
     }
 }
