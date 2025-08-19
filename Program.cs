@@ -1,5 +1,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -11,7 +14,6 @@ using universityManagementSys.Repositories.Implementations;
 using universityManagementSys.Repositories.Interfaces;
 using universityManagementSys.Services.Implementations;
 using universityManagementSys.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace universityManagementSys
 {
@@ -19,13 +21,23 @@ namespace universityManagementSys
     {
         public static void Main(string[] args)
         {
-            
+           
             var builder = WebApplication.CreateBuilder(args);
-
             builder.Services.AddAutoMapper(conf => { }, typeof(DTOsMapper));
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddControllersWithViews();
+            
+            //Add Swagger versioning
+            builder.Services.AddEndpointsApiExplorer();
+           
+
+           
+
+     
             
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+           
 
             builder.Services.AddDbContext<Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -53,9 +65,45 @@ namespace universityManagementSys
                 conf.Password.RequiredLength = 8;
             })
                   .AddEntityFrameworkStores<Context>();
+            
+            builder.Services.AddApiVersioning(options =>
+            {
+                //Default versioning strategy
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
 
+                //Display API versions in the header response
+                options.ReportApiVersions = true;
 
+                //Versioning by query string, header, or URL segment
+                options.ApiVersionReader = ApiVersionReader.Combine(
+                    new QueryStringApiVersionReader("api-version"),
+                    new HeaderApiVersionReader("X-Version"),
+                    new UrlSegmentApiVersionReader()
+                );
+            });
             var app = builder.Build();
+
+            //Active swagger UI
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    //API Versioning
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+                });
+            }
+            //Active swagger UI
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    //API Versioning
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+                });
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

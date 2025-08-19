@@ -13,6 +13,8 @@ public class DTOsMapper : Profile
             // Students Mapper
             CreateMap<CreateStudentDto, Student>();
             CreateMap<UpdateStudentDto, Student>();
+            CreateMap<Student, ReadStudentDTO>()
+                .ForMember(dest => dest.departmentName, opt => opt.MapFrom(src => src.Department.Name));
 
             // Courses Mapper
             CreateMap<CreateCourseDTO, Course>();
