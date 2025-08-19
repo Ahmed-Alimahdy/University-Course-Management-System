@@ -116,7 +116,7 @@ namespace universityManagementSys.Controllers
             ViewBag.Semester = new SelectList(semesters, "ID", "Name");
 
 
-            DataViewModel viewModel = new DataViewModel
+            dataViewModel viewModel = new dataViewModel
             {
                 PageTitle = "Add Course",
                 WelcomeMessage = "Please fill in the course details.",
