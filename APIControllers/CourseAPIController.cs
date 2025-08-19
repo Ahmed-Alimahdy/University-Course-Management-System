@@ -9,7 +9,8 @@ using universityManagementSys.Services.Interfaces;
 
 namespace universityManagementSys.APIControllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class CourseAPIController : ControllerBase
     {

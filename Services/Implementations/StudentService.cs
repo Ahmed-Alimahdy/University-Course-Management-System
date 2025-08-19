@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using universityManagementSys.Data;
-using universityManagementSys.DTOs.Courses;
 using universityManagementSys.DTOs.Students;
 using universityManagementSys.Models;
 using universityManagementSys.Repositories.Interfaces;
@@ -54,9 +51,10 @@ namespace universityManagementSys.Services.Implementations
             return await _studentRepo.DeleteAsync(studentId);
         }
 
-        async Task<IEnumerable<Student>> IStudentService.GetAllStudents()
+        async Task<IEnumerable<ReadStudentDTO>> IStudentService.GetAllStudents()
         {
-            return await _studentRepo.GetAllAsync();
+            var students = await _studentRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<ReadStudentDTO>>(students);
         }
         async Task<Student?> IStudentService.GetById(int id)
         {
