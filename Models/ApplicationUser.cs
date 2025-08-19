@@ -4,6 +4,6 @@ namespace universityManagementSys.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        String address;
+       public String address;
     }
 }
