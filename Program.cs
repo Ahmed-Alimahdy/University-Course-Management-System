@@ -15,7 +15,7 @@ namespace universityManagementSys
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
            
             var builder = WebApplication.CreateBuilder(args);
@@ -89,6 +89,14 @@ namespace universityManagementSys
                     new UrlSegmentApiVersionReader()
                 );
             });
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied"; 
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30); 
+                options.SlidingExpiration = true; 
+            });
+
             var app = builder.Build();
 
             //Active swagger UI
@@ -112,22 +120,42 @@ namespace universityManagementSys
                 });
             }
 
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseRouting();
-
+            // Order is important here
+            app.UseAuthentication();
             app.UseAuthorization();
+          
             app.UseCors("AllowAll");
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await SeedRolesAsync(roleManager);
+            }
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
+
             app.Run();
+        }
+        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        {
+            if (!await roleManager.RoleExistsAsync("Admin"))
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+            if (!await roleManager.RoleExistsAsync("Instructor"))
+                await roleManager.CreateAsync(new IdentityRole("Instructor"));
+
+            if (!await roleManager.RoleExistsAsync("Student"))
+                await roleManager.CreateAsync(new IdentityRole("Student"));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,7 @@ using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
+    [Authorize]
     public class CourseController : Controller
     {
       
@@ -114,7 +116,7 @@ namespace universityManagementSys.Controllers
             ViewBag.Semester = new SelectList(semesters, "ID", "Name");
 
 
-            dataViewModel viewModel = new dataViewModel
+            DataViewModel viewModel = new DataViewModel
             {
                 PageTitle = "Add Course",
                 WelcomeMessage = "Please fill in the course details.",

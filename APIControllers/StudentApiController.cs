@@ -20,6 +20,7 @@ namespace universityManagementSys.APIControllers
         Context _context;
         IMapper _mapper;
         IStudentService _studentService;
+
         public StudentApiController(IStudentService studentService,IMapper mapper,Context context)
         {
             _context = context;
@@ -28,6 +29,7 @@ namespace universityManagementSys.APIControllers
         }
         
         [HttpGet]
+        [Authorize(Roles = "Admin,Instructor,Student")]
         public async Task<ActionResult<IEnumerable<Student>>> GetAllUsers()
         {
            return Ok(await _studentService.GetAllStudents());
@@ -35,6 +37,7 @@ namespace universityManagementSys.APIControllers
     
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Roles = "Admin,Instructor,Student")]
         public async Task<ActionResult<IEnumerable<Student>>> GetStudentById(int id)  // USING ACTIONRESULT TO RETURN DIFFERENT TYPES OF RESPONSES  
         {
             var student = await _studentService.GetById(id);
@@ -48,6 +51,7 @@ namespace universityManagementSys.APIControllers
 
         [HttpPost]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Student>> CreateStudent(CreateStudentDto studentdto)
         {
             var userId = await _studentService.CreateStudent(studentdto);
@@ -55,6 +59,7 @@ namespace universityManagementSys.APIControllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<bool>> UpdateStudent(int id,UpdateStudentDto studentDto)
         {
 
@@ -71,6 +76,7 @@ namespace universityManagementSys.APIControllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<bool>> DeleteStudent(int id)
         {
             var student = await _context.students.FindAsync(id);

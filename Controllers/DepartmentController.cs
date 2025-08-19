@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -6,6 +7,8 @@ using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.wwwroot
 {
+    [Authorize]
+
     public class DepartmentController : Controller
     {
        
