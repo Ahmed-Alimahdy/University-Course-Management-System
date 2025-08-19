@@ -12,55 +12,65 @@ namespace universityManagementSys.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.roleManager = roleManager;
         }
-
-        [HttpGet]
 
         //Register
+        [HttpGet]
         public IActionResult Register()
         {
-            return View("RegisterView");
+            return View("Register");
         }
+
         [Authorize(Roles = "Admin")]
         public IActionResult AdminDashBoard()
         {
             return View("AdminDashBoard");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Register(RegisterViewModel newUser)
         {
-
-            
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser();
-                user.UserName = newUser.UserName;
-                user.address = newUser.Address;
-                IdentityResult Result = await userManager.CreateAsync(user, newUser.Password);
-                if (Result.Succeeded)
+                ApplicationUser user = new ApplicationUser
                 {
-                    if(await userManager.IsInRoleAsync(user, "Admin"))
-                        {
-                       
-                          return RedirectToAction("AdminDashBoard");
-                        }
-                    await userManager.AddToRoleAsync(user, "User");
+                    UserName = newUser.UserName,
+                    Email = newUser.Email,
+                    PhoneNumber = newUser.PhoneNumber
+                };
+
+                IdentityResult result = await userManager.CreateAsync(user, newUser.Password);
+
+                if (result.Succeeded)
+                {
+                    // Add selected role (Student or Instructor)
+                    if (await roleManager.RoleExistsAsync(newUser.Role))
+                    {
+                        await userManager.AddToRoleAsync(user, newUser.Role);
+                    }
+
                     await signInManager.SignInAsync(user, false);
-                    return RedirectToAction("Index","AccountController");
+
+                    if (newUser.Role == "Admin")
+                        return RedirectToAction("AdminDashBoard");
+
+                    return RedirectToAction("Index", "Home"); // or your default page
                 }
-                foreach (var Error in Result.Errors)
+
+                foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, Error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-            return View("RegisterView", newUser);
+            return View("Register", newUser);
         }
+
 
         [HttpGet]
 
