@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Admin Dashboard</h2>
+    <hr />
+
+    <!-- Welcome Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Welcome, Admin 👋</h5>
+            <p class="card-text">From here, you can manage users, assign roles, and monitor the system.</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Sections -->
+    <div class="row">
+        <!-- Manage Users -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people fs-1 text-primary"></i>
+                    <h5 class="card-title mt-2">Manage Users</h5>
+                    <p class="card-text">Add, update, delete, and view all registered users.</p>
+                    <a asp-controller="Account" asp-action="ManageUsers" class="btn btn-outline-primary w-100">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assign Roles -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-lock fs-1 text-success"></i>
+                    <h5 class="card-title mt-2">Assign Roles</h5>
+                    <p class="card-text">Promote users to Admin, Instructor, or Student roles.</p>
+                    <a asp-controller="Account" asp-action="AssignRole" class="btn btn-outline-success w-100">Go</a>
+                </div>
+            </div>
+        </div>
+
+    <!-- Logout Button -->
+    <div class="text-center mt-4">
+        <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+}

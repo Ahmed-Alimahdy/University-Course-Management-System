@@ -1,0 +1,45 @@
+﻿@model universityManagementSys.ViewModel.AssignRoleViewModel
+
+@{
+    ViewData["Title"] = "Assign Role";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Assign Role</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <form asp-action="AssignRole" method="post">
+        <div class="mb-3">
+            <label for="UserId" class="form-label">Select User</label>
+            <select asp-for="UserId" class="form-select">
+                <option value="">-- Choose User --</option>
+                @foreach (var user in Model.AvailableUsers)
+                {
+                    <option value="@user.Id">@user.UserName (@user.Email)</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="SelectedRole" class="form-label">Select Role</label>
+            <select asp-for="SelectedRole" class="form-select">
+                <option value="">-- Choose Role --</option>
+                @foreach (var role in Model.AvailableRoles)
+                {
+                    <option value="@role">@role</option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Assign Role</button>
+        <a asp-controller="Account" asp-action="AdminDashBoard" class="btn btn-secondary ms-2">Back to Dashboard</a>
+    </form>
+</div>
