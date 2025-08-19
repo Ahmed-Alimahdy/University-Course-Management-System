@@ -23,9 +23,9 @@ namespace universityManagementSys.Controllers
             _departmentRepository = departmentRepository;
         }
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllStudents()
+        public async Task<IActionResult> GetAllStudents()
         {
-           var students = _studentRepository.GetAllAsync();
+           var students = await _studentRepository.GetAllAsync();
 
             return View("GetStudents",students);
         }
@@ -33,7 +33,7 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoSearch()
         {
             ViewBag.functionName = "GetStudentByID";
-            dataViewModel modelView = new dataViewModel
+            DataViewModel modelView = new DataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
@@ -53,7 +53,7 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoAssign()
         {
             ViewBag.functionName = "AssignCourseToStudent";
-            dataViewModel modelView = new dataViewModel
+            DataViewModel modelView = new DataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
@@ -73,7 +73,7 @@ namespace universityManagementSys.Controllers
             }
             var courses = _courseRepository.GetCoursesForDropDownLists().Result;
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Assign Course to Student",
                 WelcomeMessage = "Please select a course to assign to the student.",
@@ -136,7 +136,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name");
 
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Create Student",
                 WelcomeMessage = "Please fill in the student details.",
@@ -165,7 +165,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name");
 
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Create Student",
                 WelcomeMessage = "Please fill in the student details.",
@@ -186,7 +186,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
 
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Edit Student",
                 WelcomeMessage = "Please update the student details.",
@@ -206,7 +206,7 @@ namespace universityManagementSys.Controllers
                     .ToList();
                 ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
 
-                var model = new dataViewModel
+                var model = new DataViewModel
                 {
                     PageTitle = "Edit Student",
                     WelcomeMessage = "Please update the student details.",

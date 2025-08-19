@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using universityManagementSys.Models;
+using universityManagementSys.Repositories.Implementations;
+using universityManagementSys.Repositories.Interfaces;
 using universityManagementSys.ViewModel;
 
 namespace universityManagementSys.Controllers
@@ -11,13 +13,18 @@ namespace universityManagementSys.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IStudentRepository studentRepository;
+        private readonly IInstructorRepository instructorRepository;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IStudentRepository studentRepository,IInstructorRepository instructorRepository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
+            this.studentRepository = studentRepository;
+            this.instructorRepository = instructorRepository;
         }
+
 
         //Register
         [HttpGet]
@@ -59,6 +66,14 @@ namespace universityManagementSys.Controllers
 
                     if (newUser.Role == "Admin")
                         return RedirectToAction("AdminDashBoard");
+                    if (newUser.Role == "Student")
+                    {
+                        studentRepository.AddAsync(new Student { FirstName = newUser.UserName ,LastName = "",Email = newUser.Email ,PhoneNum = newUser.PhoneNumber ,DepartmentID =1}).Wait();
+                    }
+                    if(newUser.Role == "Instructor")
+                    {
+                        instructorRepository.AddAsync(new Instructor {FirstName = newUser.UserName, Email= newUser.Email , LastName = "" , Title ="", PhoneNum =newUser.PhoneNumber  }).Wait();
+                    }
 
                     return RedirectToAction("Index", "Home"); // or your default page
                 }
@@ -94,6 +109,11 @@ namespace universityManagementSys.Controllers
                     if (found)
                     {
                         await signInManager.SignInAsync(user, newUser.RememberMe);
+                        if (User.IsInRole("Admin"))
+                        {
+                            return RedirectToAction("AdminDashBoard");
+                        }
+                      
                         return RedirectToAction("Index", "Home");
                     }
 

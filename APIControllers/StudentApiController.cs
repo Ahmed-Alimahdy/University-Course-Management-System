@@ -58,11 +58,12 @@ namespace universityManagementSys.APIControllers
             return Ok(userId);
         }
 
+        // ... rest of your code ...
+
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<bool>> UpdateStudent(int id,UpdateStudentDto studentDto)
+        public async Task<ActionResult<bool>> UpdateStudent(int id, UpdateStudentDto studentDto)
         {
-
             var student = await _context.students.FindAsync(id);
 
             if (student == null)
@@ -70,7 +71,7 @@ namespace universityManagementSys.APIControllers
                 return BadRequest("There is no user with that id");
             }
             _mapper.Map(studentDto, student);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // This will now work with the correct using directive
             return true;
         }
 
@@ -85,7 +86,7 @@ namespace universityManagementSys.APIControllers
                 return BadRequest("There is no user with that id");
             }
             _context.students.Remove(student);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // This will now work with the correct using directive
             return true;
         }
     }

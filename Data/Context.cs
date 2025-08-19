@@ -30,8 +30,6 @@ namespace universityManagementSys.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<Student>()
                 .HasOne<Department>(s => s.Department)
                 .WithMany(d => d.Students)
@@ -104,6 +102,8 @@ namespace universityManagementSys.Data
                 .WithMany(g => g.Enrollments)
                 .HasForeignKey(e => e.GradeID)
                 .OnDelete(DeleteBehavior.SetNull);
+            base.OnModelCreating(modelBuilder);
         }
+         
     }
 }
