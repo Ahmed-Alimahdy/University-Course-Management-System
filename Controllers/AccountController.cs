@@ -16,6 +16,7 @@ namespace universityManagementSys.Controllers
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+
         }
 
         [HttpGet]
@@ -47,7 +48,6 @@ namespace universityManagementSys.Controllers
                 {
                     if(await userManager.IsInRoleAsync(user, "Admin"))
                         {
-                       
                           return RedirectToAction("AdminDashBoard");
                         }
                     await userManager.AddToRoleAsync(user, "User");

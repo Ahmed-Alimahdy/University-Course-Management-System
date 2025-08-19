@@ -50,7 +50,6 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            
             var model = new dataViewModel
             {
                 PageTitle = "Add instructor",

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using universityManagementSys.Models;
 
 
@@ -30,8 +28,6 @@ namespace universityManagementSys.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<Student>()
                 .HasOne<Department>(s => s.Department)
                 .WithMany(d => d.Students)
