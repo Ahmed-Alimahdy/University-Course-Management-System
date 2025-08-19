@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using universityManagementSys.Models;
 using universityManagementSys.ViewModel;
 
 namespace universityManagementSys.Controllers
 {
-    public class AcountController : Controller
+    public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
-        public AcountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -24,13 +25,18 @@ namespace universityManagementSys.Controllers
         {
             return View("RegisterView");
         }
-
+        [Authorize(Roles = "Admin")]
+        public IActionResult AdminDashBoard()
+        {
+            return View("AdminDashBoard");
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-
         public async Task<IActionResult> Register(RegisterViewModel newUser)
         {
+
+            
             if (ModelState.IsValid)
             {
                 ApplicationUser user = new ApplicationUser();
@@ -39,10 +45,14 @@ namespace universityManagementSys.Controllers
                 IdentityResult Result = await userManager.CreateAsync(user, newUser.Password);
                 if (Result.Succeeded)
                 {
-
-                    await userManager.AddToRoleAsync(user, "Admin");
+                    if(await userManager.IsInRoleAsync(user, "Admin"))
+                        {
+                       
+                          return RedirectToAction("AdminDashBoard");
+                        }
+                    await userManager.AddToRoleAsync(user, "User");
                     await signInManager.SignInAsync(user, false);
-                    return RedirectToAction("Index", "Book");
+                    return RedirectToAction("Index","AccountController");
                 }
                 foreach (var Error in Result.Errors)
                 {
@@ -74,7 +84,7 @@ namespace universityManagementSys.Controllers
                     if (found)
                     {
                         await signInManager.SignInAsync(user, newUser.RememberMe);
-                        return RedirectToAction("Index", "Book");
+                        return RedirectToAction("Index");
                     }
 
                     ModelState.AddModelError("password", "password is incorrect.");
@@ -89,7 +99,29 @@ namespace universityManagementSys.Controllers
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return View("LoginView");
+            return RedirectToAction("Login");
+        }
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+        
+        [Authorize(Roles = "Admin")]
+        
+        public async Task<IActionResult> AssignRole(string userId, string role)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            var result = await userManager.AddToRoleAsync(user, role);
+            if (!result.Succeeded)
+            {
+                TempData["Error"] = "Failed to assign role.";
+                return RedirectToAction("ManageUsers");
+            }
+
+            TempData["Success"] = "Role assigned successfully!";
+            return RedirectToAction("ManageUsers");
         }
     }
 }

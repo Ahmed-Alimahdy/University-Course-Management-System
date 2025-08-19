@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
@@ -8,6 +9,8 @@ using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
+    [Authorize]
+
     public class SemesterController : Controller
     {
        
