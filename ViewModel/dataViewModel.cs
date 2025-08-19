@@ -2,7 +2,7 @@
 
 namespace universityManagementSys.ModelView
 {
-    public class ViewModel
+    public class dataViewModel
 
     {
         public string PageTitle { get; set; } = string.Empty;
