@@ -33,6 +33,8 @@ namespace universityManagementSys
             builder.Services.AddScoped<DbExceptionFilter>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<ICourseService, CourseService>();
+            builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+            builder.Services.AddScoped<IDepartmentCourseRepository, DepartmentCourseRepository>();
 
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<IInstructorService, InstructorService>();
