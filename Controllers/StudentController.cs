@@ -1,15 +1,13 @@
-﻿using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
 using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
+    [Authorize]
     public class StudentController : Controller
     {
         IStudentRepository _studentRepository;
@@ -24,7 +22,7 @@ namespace universityManagementSys.Controllers
             _enrollmentRepository = enrollmentRepository;
             _departmentRepository = departmentRepository;
         }
-       
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAllStudents()
         {
            var students = _studentRepository.GetAllAsync();
@@ -35,7 +33,7 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoSearch()
         {
             ViewBag.functionName = "GetStudentByID";
-            dataViewModel modelView = new dataViewModel
+            DataViewModel modelView = new DataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
@@ -55,7 +53,7 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoAssign()
         {
             ViewBag.functionName = "AssignCourseToStudent";
-            dataViewModel modelView = new dataViewModel
+            DataViewModel modelView = new DataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
@@ -75,7 +73,7 @@ namespace universityManagementSys.Controllers
             }
             var courses = _courseRepository.GetCoursesForDropDownLists().Result;
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Assign Course to Student",
                 WelcomeMessage = "Please select a course to assign to the student.",
@@ -138,7 +136,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name");
 
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Create Student",
                 WelcomeMessage = "Please fill in the student details.",
@@ -165,7 +163,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
 
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Edit Student",
                 WelcomeMessage = "Please update the student details.",

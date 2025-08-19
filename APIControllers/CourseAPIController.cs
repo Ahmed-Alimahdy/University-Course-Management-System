@@ -12,6 +12,7 @@ namespace universityManagementSys.APIControllers
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [ApiController]
+    
     public class CourseAPIController : ControllerBase
     {
         private readonly ICourseService _courseService;
@@ -24,6 +25,7 @@ namespace universityManagementSys.APIControllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         async public Task<ActionResult<int>> CreateCourse(CreateCourseDTO courseDTO)
         {
             if(!ModelState.IsValid)
@@ -36,6 +38,7 @@ namespace universityManagementSys.APIControllers
 
         [HttpPut]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCourse(int id, UpdateCourseDTO courseDTO)
         {
             if (!ModelState.IsValid)
@@ -51,6 +54,7 @@ namespace universityManagementSys.APIControllers
 
         [HttpDelete]
         [Route("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
             var deleted = await _courseService.DeleteCourse(id);
@@ -60,7 +64,7 @@ namespace universityManagementSys.APIControllers
 
             return NoContent();
         }
-
+        [Authorize(Roles = "Admin,Instructor,Student")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetAllCourses()
         {
@@ -69,6 +73,7 @@ namespace universityManagementSys.APIControllers
 
         [HttpGet]
         [Route("{id}")]
+        [Authorize(Roles = "Admin,Instructor,Student")]
         public async Task<ActionResult<Course>> GetById(int id)
         {
             var course = await _courseService.GetByID(id);

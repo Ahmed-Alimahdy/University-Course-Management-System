@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using universityManagementSys.DTOs.Instructors;
 using universityManagementSys.Models;
@@ -19,7 +20,7 @@ namespace universityManagementSys.APIControllers
             _instructorService = instructorService;
             _mapper = mapper;
         }
-       
+        [Authorize(Roles = "Admin,Instructor,Student")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Instructor>>> GetAllInstructors()
         {
@@ -30,7 +31,7 @@ namespace universityManagementSys.APIControllers
             return Ok(instructors);
         }
 
-        
+        [Authorize(Roles = "Admin,Instructor,Student")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Instructor>> GetInstructorById(int id)
         {
@@ -43,6 +44,7 @@ namespace universityManagementSys.APIControllers
 
         
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<int>> CreateInstructor(CreateInstructorDTO dto)
         {
             if (!ModelState.IsValid)
@@ -54,6 +56,7 @@ namespace universityManagementSys.APIControllers
 
         
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateInstructor(int id, UpdateInstructorDTO dto)
         {
             if (!ModelState.IsValid)
@@ -68,6 +71,7 @@ namespace universityManagementSys.APIControllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteInstructor(int id)
         {
             var result = await _instructorService.DeleteInstructor(id);
