@@ -114,5 +114,13 @@ namespace universityManagementSys.wwwroot
             TempData["Success"] = "Department deleted successfully!";
             return RedirectToAction("GetAllDepartments");
         }
+
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsDepartmentNameUnique(string name, int id = 0)
+        {
+            var exists = await _departmentRepository.CheckUniqueNameAsync(name, id);
+            return Json(!exists);
+        }
+
     }
 }

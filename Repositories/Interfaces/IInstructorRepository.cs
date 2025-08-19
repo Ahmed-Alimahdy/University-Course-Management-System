@@ -6,6 +6,8 @@ namespace universityManagementSys.Repositories.Interfaces
     {
         Task<Instructor?> GetByIdAsync(int id);
         Task<IEnumerable<Instructor>> GetAllAsync();
+        Task<bool> CheckUniqueEmailAsync(string email, int id);
+        Task<bool> CheckUniquePhoneAsync(string phone, int id);
         Task AddAsync(Instructor instructor);
         Task UpdateAsync(Instructor instructor);
         Task<bool> UpdateAsync(int id, Instructor instructor);

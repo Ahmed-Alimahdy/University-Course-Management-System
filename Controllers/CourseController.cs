@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Filters;
@@ -165,6 +166,13 @@ namespace universityManagementSys.Controllers
             _courseRepository.SaveAsync().Wait();
             TempData["Success"] = "Courses deleted successfully!";
             return RedirectToAction("GetAllCourses");
+        }
+
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsCourseNameUnique(string name, int id = 0)
+        {
+            var exists = await _courseRepository.CheckUniqueNameAsync(name, id); 
+            return Json(!exists);
         }
 
     }

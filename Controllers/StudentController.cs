@@ -205,5 +205,12 @@ namespace universityManagementSys.Controllers
             TempData["Success"] = "Student deleted successfully!";
             return RedirectToAction("GetAllStudents");
         }
+
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsEmailUnique(string email, int id = 0)
+        {
+            var exists = await _studentRepository.CheckUniqueEmailAsync(email, id);
+            return Json(!exists);
+        }
     }
 }

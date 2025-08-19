@@ -46,6 +46,11 @@ namespace universityManagementSys.Repositories.Implementations
             return await _context.courses.Include(c => c.Instructor).Include(c => c.Semester).FirstOrDefaultAsync(c => c.ID == id);
         }
 
+        public async Task<bool> CheckUniqueNameAsync(string name, int id = 0)
+        {
+            return await _context.courses.AnyAsync(c => c.Name == name && c.ID != id);
+        }
+
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();

@@ -6,6 +6,7 @@ namespace universityManagementSys.Repositories.Interfaces
     {
         Task<Student?> GetByIdAsync(int id);
         Task<Student> GetByIdForAssignCourseAsync(int id);
+        Task<bool> CheckUniqueEmailAsync(string email, int id);
         Task<IEnumerable<Student>> GetAllAsync();
         Task<Student?> GetByEmailAsync(string email);
         Task AddAsync(Student student);

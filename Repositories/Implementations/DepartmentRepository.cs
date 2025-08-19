@@ -40,6 +40,11 @@ namespace universityManagementSys.Repositories.Implementations
             return await _context.departments.Include(d => d.Students).FirstOrDefaultAsync(d => d.ID == id);
         }
 
+        public async Task<bool> CheckUniqueNameAsync(string name, int id)
+        {
+            return await _context.departments.AnyAsync(d => d.Name == name && d.ID != id);
+        }
+
 
         public async Task SaveAsync()
         {

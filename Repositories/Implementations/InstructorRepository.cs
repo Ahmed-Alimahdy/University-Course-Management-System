@@ -41,6 +41,17 @@ namespace universityManagementSys.Repositories.Implementations
             return await _context.instructors.Include(i => i.Courses).FirstOrDefaultAsync(i => i.ID == id);
         }
 
+        public async Task<bool> CheckUniqueEmailAsync(string email, int id)
+        {
+            return await _context.instructors.AnyAsync(i => i.Email == email && i.ID != id);
+        }
+
+        public async Task<bool> CheckUniquePhoneAsync(string phone, int id)
+        {
+            return await _context.instructors.AnyAsync(i => i.PhoneNum == phone && i.ID != id);
+        }
+
+
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();

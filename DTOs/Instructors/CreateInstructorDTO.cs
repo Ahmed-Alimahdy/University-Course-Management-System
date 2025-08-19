@@ -4,7 +4,6 @@ namespace universityManagementSys.DTOs.Instructors
 {
     public class CreateInstructorDTO
     {
-
         [Required]
         [MinLength(2)]
         public string FirstName { get; set; }
@@ -13,9 +12,10 @@ namespace universityManagementSys.DTOs.Instructors
         [MinLength(2)]
         public string LastName { get; set; }
 
-        [Phone]
+        [Required]
         public string PhoneNum { get; set; }
 
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 

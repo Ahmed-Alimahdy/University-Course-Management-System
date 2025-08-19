@@ -37,6 +37,11 @@ namespace universityManagementSys.Repositories.Implementations
             return await _context.students.Include(s => s.Department).ToListAsync();
         }
 
+        public async Task<bool> CheckUniqueEmailAsync(string email, int id)
+        {
+            return await _context.students.AnyAsync(i => i.Email == email && i.ID != id);
+        }
+
         public async Task<Student?> GetByIdAsync(int id)
         {
             return await _context.students

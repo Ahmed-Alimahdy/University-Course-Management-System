@@ -104,5 +104,20 @@ namespace universityManagementSys.Controllers
             return RedirectToAction("GetAllInstructors");
         }
 
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsEmailUnique(string email, int id = 0)
+        {
+            var exists = await _instructorRepository.CheckUniqueEmailAsync(email, id);
+            return Json(!exists);
+        }
+
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsPhoneUnique(string phoneNum, int id = 0)
+        {
+            var exists = await _instructorRepository.CheckUniquePhoneAsync(phoneNum, id);
+            return Json(!exists);
+        }
+
+
     }
 }
