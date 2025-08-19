@@ -12,8 +12,8 @@ using universityManagementSys.Data;
 namespace universityManagementSys.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250819171744_initWithApplicationUser")]
-    partial class initWithApplicationUser
+    [Migration("20250819185911_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
