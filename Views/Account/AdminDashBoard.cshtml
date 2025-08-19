@@ -2,50 +2,122 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Admin Dashboard</h2>
-    <hr />
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">Admin Dashboard</h1>
+        <p class="text-muted">Control and monitor every part of your system in one place.</p>
+        <hr class="w-25 mx-auto" />
+    </div>
 
     <!-- Welcome Card -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Welcome, Admin 👋</h5>
-            <p class="card-text">From here, you can manage users, assign roles, and monitor the system.</p>
+    <div class="card shadow-lg border-0 mb-5 bg-light">
+        <div class="card-body text-center">
+            <h3 class="card-title text-dark">👋 Welcome, Admin</h3>
+            <p class="card-text text-muted">
+                From here, you can manage users, assign roles, courses, and keep track of the system.
+            </p>
         </div>
     </div>
 
     <!-- Dashboard Sections -->
-    <div class="row">
+    <div class="row g-4">
         <!-- Manage Users -->
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center hover-card">
+                <div class="card-body">
                     <i class="bi bi-people fs-1 text-primary"></i>
-                    <h5 class="card-title mt-2">Manage Users</h5>
-                    <p class="card-text">Add, update, delete, and view all registered users.</p>
-                    <a asp-controller="Account" asp-action="ManageUsers" class="btn btn-outline-primary w-100">Go</a>
+                    <h5 class="card-title mt-3">Manage Users</h5>
+                    <p class="text-muted">Add, update, delete, and view all registered users.</p>
+                    <a asp-controller="Account" asp-action="ManageUsers"
+                       class="btn btn-primary w-100 rounded-pill">Go</a>
                 </div>
             </div>
         </div>
 
         <!-- Assign Roles -->
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center hover-card">
+                <div class="card-body">
                     <i class="bi bi-shield-lock fs-1 text-success"></i>
-                    <h5 class="card-title mt-2">Assign Roles</h5>
-                    <p class="card-text">Promote users to Admin, Instructor, or Student roles.</p>
-                    <a asp-controller="Account" asp-action="AssignRole" class="btn btn-outline-success w-100">Go</a>
+                    <h5 class="card-title mt-3">Assign Roles</h5>
+                    <p class="text-muted">Promote users to Admin, Instructor, or Student roles.</p>
+                    <a asp-controller="Account" asp-action="AssignRole"
+                       class="btn btn-success w-100 rounded-pill">Go</a>
                 </div>
             </div>
         </div>
 
+        <!-- Manage Students -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center hover-card">
+                <div class="card-body">
+                    <i class="bi bi-mortarboard fs-1 text-warning"></i>
+                    <h5 class="card-title mt-3">Manage Students</h5>
+                    <p class="text-muted">Add, update, delete, and view student information.</p>
+                    <a asp-controller="Student" asp-action="GetAllStudents"
+                       class="btn btn-warning w-100 rounded-pill">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Courses -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center hover-card">
+                <div class="card-body">
+                    <i class="bi bi-journal-bookmark fs-1 text-danger"></i>
+                    <h5 class="card-title mt-3">Manage Courses</h5>
+                    <p class="text-muted">Add, update, delete, and view all courses.</p>
+                    <a asp-controller="Course" asp-action="ManageCourses"
+                       class="btn btn-danger w-100 rounded-pill">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Semesters -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center hover-card">
+                <div class="card-body">
+                    <i class="bi bi-calendar fs-1 text-info"></i>
+                    <h5 class="card-title mt-3">Manage Semesters</h5>
+                    <p class="text-muted">Add, update, delete, and view all semesters.</p>
+                    <a asp-controller="Semester" asp-action="ManageSemesters"
+                       class="btn btn-info w-100 rounded-pill">Go</a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Manage Departments -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center hover-card">
+                <div class="card-body">
+                    <i class="bi bi-building fs-1 text-secondary"></i>
+                    <h5 class="card-title mt-3">Manage Departments</h5>
+                    <p class="text-muted">Add, update, delete, and view all departments.</p>
+                    <a asp-controller="Department" asp-action="ManageDepartments"
+                       class="btn btn-secondary w-100 rounded-pill">Go</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Logout Button -->
-    <div class="text-center mt-4">
-        <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
+    <div class="text-center mt-5">
+        <a asp-controller="Account" asp-action="Logout"
+           class="btn btn-outline-danger px-4 py-2 rounded-pill shadow-sm">Logout</a>
     </div>
 </div>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
+@section Styles {
+    <style>
+        .hover-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .hover-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            }
+    </style>
 }

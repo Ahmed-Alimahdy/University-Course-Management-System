@@ -23,11 +23,11 @@ namespace universityManagementSys.Controllers
             _departmentRepository = departmentRepository;
         }
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAllStudents()
+        public async Task<IActionResult> GetAllStudents()
         {
-           var students = _studentRepository.GetAllAsync();
+            var students = await _studentRepository.GetAllAsync();
 
-            return View("GetStudents",students);
+            return View("GetStudents", students);
         }
 
         public IActionResult GetIdtoSearch()
