@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Filters;
 using universityManagementSys.Models;
@@ -14,15 +12,15 @@ namespace universityManagementSys.Controllers
     [Authorize]
     public class CourseController : Controller
     {
-      
+
         ICourseRepository _courseRepository;
         IEnrollmentRepository _enrollmentRepository;
         IInstructorRepository _instructorRepository;
-        ISemesterRepository _semesterRepository;    
+        ISemesterRepository _semesterRepository;
         IDepartmentCourseRepository _departmentCourseRepository;
-        public CourseController(Context context,ICourseRepository courseRepository, IEnrollmentRepository enrollmentRepository, IInstructorRepository instructorRepository,ISemesterRepository semesterRepository,IDepartmentCourseRepository departmentCourseRepository)
+        public CourseController(Context context, ICourseRepository courseRepository, IEnrollmentRepository enrollmentRepository, IInstructorRepository instructorRepository, ISemesterRepository semesterRepository, IDepartmentCourseRepository departmentCourseRepository)
         {
-            
+
             _courseRepository = courseRepository;
             _instructorRepository = instructorRepository;
             _semesterRepository = semesterRepository;
@@ -31,7 +29,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllCourses()
         {
-            
+
             var courses = _courseRepository.GetAllAsync().Result;
             ViewData["PageTitle"] = "Get all courses";
             ViewData["Courses"] = courses;
@@ -39,7 +37,7 @@ namespace universityManagementSys.Controllers
             //{
             //    courses = null;
             //}
-            return View("AllCourses",courses);
+            return View("AllCourses", courses);
         }
         public IActionResult GetCourseByID(int id)
         {
@@ -57,8 +55,8 @@ namespace universityManagementSys.Controllers
                 .Where(e => e.StudentID == id)
                 .Select(e => e.Course)
                 .ToList();
-       
-                return View(courses);
+
+            return View(courses);
         }
         public IActionResult GetAllCoursesBySemesterID(int id)
         {
@@ -66,10 +64,10 @@ namespace universityManagementSys.Controllers
                 .Where(c => c.SemesterID == id)
                 .ToList();
             if (courses == null || !courses.Any())
-            { 
+            {
                 return NotFound();
             }
-                return View(courses);
+            return View(courses);
         }
         public IActionResult GetAllCoursesByDepartmentId(int id)
         {
@@ -97,10 +95,10 @@ namespace universityManagementSys.Controllers
         public IActionResult Create()
         {
             var instructors = _instructorRepository.GetAllAsync().Result
-                 .Select(d => new { d.ID, d.FirstName,d.LastName })
+                 .Select(d => new { d.ID, d.FirstName, d.LastName })
                  .ToList();
 
-            var semesters = _semesterRepository.GetAllAsync().Result    
+            var semesters = _semesterRepository.GetAllAsync().Result
                  .Select(d => new { d.ID, d.Name })
                  .ToList();
 
@@ -124,12 +122,51 @@ namespace universityManagementSys.Controllers
             };
             return View("AddCourse", viewModel);
         }
+
+
+
+
         public IActionResult CreateCourse(Course course)
         {
-            _courseRepository.AddAsync(course).Wait();
-            _courseRepository.SaveAsync().Wait();
-            TempData["Success"] = "Course added successfully!";
-            return RedirectToAction("GetAllCourses");
+            if (ModelState.IsValid)
+            {
+                _courseRepository.AddAsync(course).Wait();
+                _courseRepository.SaveAsync().Wait();
+                TempData["Success"] = "Course added successfully!";
+                return RedirectToAction("GetAllCourses");
+            }
+            else
+            {
+                var instructors = _instructorRepository.GetAllAsync().Result
+                 .Select(d => new { d.ID, d.FirstName, d.LastName })
+                 .ToList();
+
+                var semesters = _semesterRepository.GetAllAsync().Result
+                     .Select(d => new { d.ID, d.Name })
+                     .ToList();
+
+                ViewBag.Instructors = new SelectList(
+             instructors.Select(i => new {
+                 i.ID,
+                 FullName = i.FirstName + " " + i.LastName
+             }),
+             "ID",
+             "FullName"
+         );
+
+                ViewBag.Semester = new SelectList(semesters, "ID", "Name");
+
+
+                dataViewModel viewModel = new dataViewModel
+                {
+                    PageTitle = "Add Course",
+                    WelcomeMessage = "Please fill in the course details.",
+                    course = new Course()
+                };
+                TempData["Error"] = "Invalid Data";
+                return View("AddCourse", viewModel);
+
+            }
         }
         public IActionResult Edit(int id)
         {
@@ -142,10 +179,18 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult EditCourse(Course course)
         {
-            _courseRepository.UpdateAsync(course).Wait();
-            _courseRepository.SaveAsync().Wait();
-            TempData["Success"] = "Course updated successfully!";
-            return RedirectToAction("GetAllCourses");
+            if (ModelState.IsValid)
+            {
+                _courseRepository.UpdateAsync(course).Wait();
+                _courseRepository.SaveAsync().Wait();
+                TempData["Success"] = "Course updated successfully!";
+                return RedirectToAction("GetAllCourses");
+            }
+            else
+            {
+                TempData["Error"] = "Invalid Data";
+                return View();
+            }
         }
         public IActionResult Delete(int id)
         {
@@ -173,7 +218,7 @@ namespace universityManagementSys.Controllers
         [AcceptVerbs("Get", "Post")]
         public async Task<IActionResult> IsCourseNameUnique(string name, int id = 0)
         {
-            var exists = await _courseRepository.CheckUniqueNameAsync(name, id); 
+            var exists = await _courseRepository.CheckUniqueNameAsync(name, id);
             return Json(!exists);
         }
 
