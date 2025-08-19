@@ -4,7 +4,7 @@ using universityManagementSys.Models;
 
 namespace universityManagementSys.Data
 {
-    public class Context : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class Context : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public Context(DbContextOptions<Context> options) : base(options) { }
 
