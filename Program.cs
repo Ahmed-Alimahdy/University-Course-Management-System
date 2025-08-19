@@ -1,11 +1,7 @@
-using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using universityManagementSys.Data;
 using universityManagementSys.DTOs;
 using universityManagementSys.Filters;
@@ -30,14 +26,25 @@ namespace universityManagementSys
             
             //Add Swagger versioning
             builder.Services.AddEndpointsApiExplorer();
-           
 
-           
+            //Add CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200", "https://myclientapp.com") // الكلاينت المسموح بيه
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
 
-     
-            
+
+
+
+
             // Add services to the container.
-           
+
 
             builder.Services.AddDbContext<Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -113,7 +120,7 @@ namespace universityManagementSys
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseCors("AllowAll");
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
