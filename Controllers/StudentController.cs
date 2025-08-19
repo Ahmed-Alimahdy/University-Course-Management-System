@@ -146,13 +146,36 @@ namespace universityManagementSys.Controllers
             return View("AddStudent", model);
         }
 
-        public IActionResult CreateStudent(Student student)
+        [HttpPost]
+        [ValidateAntiForgeryToken] //Security measure to prevent CSRF attacks
+        public async Task<IActionResult> CreateStudent(Student student)
         {
-                _studentRepository.AddAsync(student);
-             _studentRepository.SaveAsync().Wait();
-            TempData["Success"] = "Student added successfully!";
+            if (ModelState.IsValid)
+            {
+                await _studentRepository.AddAsync(student);
+                await _studentRepository.SaveAsync();
+
+                TempData["Success"] = "Student added successfully!";
                 return RedirectToAction("GetAllStudents");
+            }
+
+            var departments = (await _departmentRepository.GetAllAsync())
+                .Select(d => new { d.ID, d.Name })
+                .ToList();
+
+            ViewBag.Departments = new SelectList(departments, "ID", "Name");
+
+            var model = new dataViewModel
+            {
+                PageTitle = "Create Student",
+                WelcomeMessage = "Please fill in the student details.",
+                student = student
+            };
+
+            TempData["Error"] = "Student data is not valid";
+            return View("AddStudent", model);
         }
+
         public IActionResult Edit(int id)
         {
             var student = _studentRepository.GetByIdAsync(id).Result;
@@ -175,6 +198,24 @@ namespace universityManagementSys.Controllers
 
         public IActionResult EditStudent(Student student)
         {
+            if (student == null || !ModelState.IsValid)
+            {
+                TempData["Error"] = "Invalid student data.";
+                var departments = _departmentRepository.GetAllAsync().Result
+                    .Select(d => new { d.ID, d.Name })
+                    .ToList();
+                ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
+
+                var model = new dataViewModel
+                {
+                    PageTitle = "Edit Student",
+                    WelcomeMessage = "Please update the student details.",
+                    student = student
+                };
+
+                return View("EditStudent", model);
+
+            }
             _studentRepository.UpdateAsync(student).Wait();
             _studentRepository.SaveAsync().Wait();
             TempData["Success"] = "Student updated successfully!";

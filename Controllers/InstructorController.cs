@@ -50,6 +50,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
+            
             var model = new dataViewModel
             {
                 PageTitle = "Add instructor",
@@ -61,10 +62,21 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult CreateInstructor(Instructor instructor)
         {
-            _instructorRepository.AddAsync(instructor).Wait();
-           _instructorRepository.SaveAsync().Wait();
-            TempData["Success"] = "instructor added successfully!";
-            return RedirectToAction("GetAllInstructors");
+            if (ModelState.IsValid)
+            {
+                _instructorRepository.AddAsync(instructor).Wait();
+                _instructorRepository.SaveAsync().Wait();
+                TempData["Success"] = "instructor added successfully!";
+                return RedirectToAction("GetAllInstructors");
+            }
+            var model = new dataViewModel
+            {
+                PageTitle = "Add instructor",
+                WelcomeMessage = "Please fill in the instructor details.",
+                instructor = instructor
+            };
+
+            return View("AddInstructor", instructor);
         }
         public IActionResult Edit(int id)
         {
@@ -78,10 +90,18 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult EditInstructor(Instructor instructor)
         {
-            _instructorRepository.UpdateAsync(instructor).Wait();
-            _instructorRepository.SaveAsync().Wait();   
-            TempData["Success"] = "Instructor updated successfully!";
-            return RedirectToAction("GetAllInstructors");
+            if (ModelState.IsValid)
+            {
+                _instructorRepository.UpdateAsync(instructor).Wait();
+                _instructorRepository.SaveAsync().Wait();
+                TempData["Success"] = "Instructor updated successfully!";
+                return RedirectToAction("GetAllInstructors");
+            }
+           
+                TempData["Error"] = "Invalid instructor data.";
+                return View("Edit", instructor);
+
+
         }
         public IActionResult Delete(int id)
         {

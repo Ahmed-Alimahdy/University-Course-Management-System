@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using universityManagementSys.Data;
 using universityManagementSys.Models;
-using universityManagementSys.ModelView;
 using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.wwwroot
@@ -72,10 +70,15 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult CreateDepartment(Department department)
         {
-            _departmentRepository.AddAsync(department).Wait();
-            _departmentRepository.SaveAsync().Wait();
-            TempData["Success"] = "Department added successfully!";
-            return RedirectToAction("GetAllDepartments");
+            if (ModelState.IsValid)
+            {
+                _departmentRepository.AddAsync(department).Wait();
+                _departmentRepository.SaveAsync().Wait();
+                TempData["Success"] = "Department added successfully!";
+                return RedirectToAction("GetAllDepartments");
+            }
+            TempData["Error"] = "Failed to add department. Please check the details and try again.";
+            return View("AddDepartment",department);
         }
         public IActionResult Edit(int id)
         {
@@ -89,10 +92,15 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult EditDepartment(Department department)
         {
-            _departmentRepository.UpdateAsync(department.ID, department).Wait();
-            _departmentRepository.SaveAsync().Wait();
-            TempData["Success"] = "Department updated successfully!";
-            return RedirectToAction("GetAllDepartments");
+            if (!ModelState.IsValid)
+            {
+                _departmentRepository.UpdateAsync(department.ID, department).Wait();
+                _departmentRepository.SaveAsync().Wait();
+                TempData["Success"] = "Department updated successfully!";
+                return RedirectToAction("GetAllDepartments");
+            }
+            TempData["Error"] = "Failed to update department. Please check the details and try again.";
+            return View("Edit", department);
         }
         public IActionResult Delete(int id)
         {

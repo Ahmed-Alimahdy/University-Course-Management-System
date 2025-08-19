@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using universityManagementSys.Data;
 using universityManagementSys.Models;
-using universityManagementSys.Repositories.Implementations;
 using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
@@ -28,17 +24,29 @@ namespace universityManagementSys.Controllers
             ViewBag.NoDataMessage = !semesters.Any() ? "No Semesters found." : " ";
             return View("GetSemesters", semesters);
         }
+       
         public IActionResult AddView()
         {
             ViewBag.PageTitle = "Add Semester";
             ViewBag.WelcomeMessage = "Welcome to the semester add Page";
             return View("AddSemester");
-        }
+        } 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult AddSemester(Semester semester)
-        {     
-           _semesterRepository.AddAsync(semester).Wait();
-            _semesterRepository.SaveAsync().Wait();
-            return RedirectToAction("GetAllSemesters");
+        {
+            if (ModelState.IsValid)
+            {
+                _semesterRepository.AddAsync(semester).Wait();
+                _semesterRepository.SaveAsync().Wait();
+                return RedirectToAction("GetAllSemesters");
+            }
+            else
+            {
+                ViewBag.PageTitle = "Add Semester";
+                ViewBag.WelcomeMessage = "Welcome to the semester add Page";
+                return View("AddSemester",semester);
+            }
         }
         public IActionResult GetSemesterByID(int id)
         {
@@ -60,10 +68,21 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult EditSemester(Semester semester)
         {
-            _semesterRepository.UpdateAsync(semester.ID,semester).Wait();
-            _semesterRepository.SaveAsync().Wait();
-            TempData["Success"] = "Semester updated successfully!";
-            return RedirectToAction("GetAllSemesters");
+            if (ModelState.IsValid)
+            {
+                _semesterRepository.UpdateAsync(semester.ID, semester).Wait();
+                _semesterRepository.SaveAsync().Wait();
+                TempData["Success"] = "Semester updated successfully!";
+                return RedirectToAction("GetAllSemesters");
+            }
+            else
+            {
+                ViewBag.PageTitle = "Edit Semester";
+                ViewBag.WelcomeMessage = "Welcome to the semester edit Page";
+               ViewBag.ErrorMessage = "Please Enter valid data.";
+                return View("EditSemester", semester);
+            }
+
         }
         public IActionResult Delete(int id)
         {
