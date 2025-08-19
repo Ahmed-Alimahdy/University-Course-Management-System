@@ -33,8 +33,7 @@ namespace universityManagementSys
                 options.AddPolicy("AllowSpecificOrigin",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:4200", "https://myclientapp.com") // الكلاينت المسموح بيه
-                              .AllowAnyHeader()
+                        policy.WithOrigins("http://localhost:4200", "https://myclientapp.com") 
                               .AllowAnyMethod();
                     });
             });
@@ -46,7 +45,7 @@ namespace universityManagementSys
             // Add services to the container.
 
 
-            builder.Services.AddDbContext<Context>(options =>
+            IServiceCollection serviceCollection = builder.Services.AddDbContext<Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<ValidateModelNotEmptyFilter>();
             builder.Services.AddScoped<DbExceptionFilter>();
@@ -64,14 +63,7 @@ namespace universityManagementSys
 
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<IStudentService, StudentService>();
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(conf =>
-            {
-                conf.Password.RequireDigit = true;
-                conf.Password.RequireLowercase = true;
-                conf.Password.RequireUppercase = true;
-                conf.Password.RequiredLength = 8;
-            })
-                  .AddEntityFrameworkStores<Context>();
+         
             
             builder.Services.AddApiVersioning(options =>
             {
@@ -92,10 +84,14 @@ namespace universityManagementSys
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/Login";
-                options.AccessDeniedPath = "/Account/AccessDenied"; 
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(30); 
-                options.SlidingExpiration = true; 
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                options.SlidingExpiration = true;
             });
+                builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<Context>()
+    .AddDefaultTokenProviders();
+
 
             var app = builder.Build();
 

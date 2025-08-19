@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using universityManagementSys.Models;
 
 
@@ -100,6 +102,8 @@ namespace universityManagementSys.Data
                 .WithMany(g => g.Enrollments)
                 .HasForeignKey(e => e.GradeID)
                 .OnDelete(DeleteBehavior.SetNull);
+            base.OnModelCreating(modelBuilder);
         }
+         
     }
 }

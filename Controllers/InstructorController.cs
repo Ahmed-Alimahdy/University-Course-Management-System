@@ -50,7 +50,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Add instructor",
                 WelcomeMessage = "Please fill in the instructor details.",
@@ -68,7 +68,7 @@ namespace universityManagementSys.Controllers
                 TempData["Success"] = "instructor added successfully!";
                 return RedirectToAction("GetAllInstructors");
             }
-            var model = new dataViewModel
+            var model = new DataViewModel
             {
                 PageTitle = "Add instructor",
                 WelcomeMessage = "Please fill in the instructor details.",

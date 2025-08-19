@@ -5,7 +5,7 @@ using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.wwwroot
 {
-    [Authorize]
+   
 
     public class DepartmentController : Controller
     {
@@ -70,15 +70,12 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult CreateDepartment(Department department)
         {
-            if (ModelState.IsValid)
-            {
+            
                 _departmentRepository.AddAsync(department).Wait();
                 _departmentRepository.SaveAsync().Wait();
                 TempData["Success"] = "Department added successfully!";
                 return RedirectToAction("GetAllDepartments");
-            }
-            TempData["Error"] = "Failed to add department. Please check the details and try again.";
-            return View("AddDepartment",department);
+            
         }
         public IActionResult Edit(int id)
         {
