@@ -6,24 +6,29 @@ using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
+using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
     public class StudentController : Controller
     {
-        Context _context;
+        IStudentRepository _studentRepository;
+        ICourseRepository _courseRepository;
+        IEnrollmentRepository _enrollmentRepository;
+        IDepartmentRepository _departmentRepository;
 
-        public StudentController(Context context)
+        public StudentController(IStudentRepository studentRepository, ICourseRepository courseRepository,IEnrollmentRepository enrollmentRepository, IDepartmentRepository departmentRepository)
         {
-            _context = context;
+            _studentRepository = studentRepository;
+            _courseRepository = courseRepository;
+            _enrollmentRepository = enrollmentRepository;
+            _departmentRepository = departmentRepository;
         }
+       
         public IActionResult GetAllStudents()
         {
-            var students = _context.students
-             .Include(s => s.Department)
-              .ToList();
+           var students = _studentRepository.GetAllAsync();
 
-            ViewBag.NoDataMessage = !students.Any() ? "No students found." : " ";
             return View("GetStudents",students);
         }
 
@@ -39,15 +44,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetStudentByID(int id)
         {
-            var student = _context.students
-    .Include(s => s.Department)
-    .Include(s => s.Enrollments)
-        .ThenInclude(e => e.Course)
-            .ThenInclude(c => c.Instructor)
-    .Include(s => s.Enrollments)
-        .ThenInclude(e => e.Course.Semester)
-    .FirstOrDefault(s => s.ID == id);
-
+            var student = _studentRepository.GetByIdAsync(id);
             if (student == null)
             {
                 TempData["Error"] = "No student found with this ID.";
@@ -67,16 +64,16 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult AssignCourseToStudent(int id)
         {
-            var student = _context.students
-                .Include(s => s.Enrollments)
-                .FirstOrDefault(s => s.ID == id);
+            var student = _studentRepository.GetByIdForAssignCourseAsync(id).Result;
             if (student == null)
             {
                 return NotFound();
             }
-            var courses = _context.courses
-                .Select(c => new { c.ID, c.Name })
-                .ToList();
+            if (HttpContext.Items.ContainsKey("ErrorMessage"))
+            {
+                TempData["Error"] = HttpContext.Items["ErrorMessage"];
+            }
+            var courses = _courseRepository.GetCoursesForDropDownLists().Result;
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
             var model = new ViewModel
             {
@@ -86,6 +83,7 @@ namespace universityManagementSys.Controllers
             };
             return View("AssignCourse", model);
         }
+        [ServiceFilter(typeof(DbExceptionFilter))]
         public IActionResult AssignCourseToStudentPost(int StudentID, int CourseID)
         {
             var enrollment = new Enrollment
@@ -94,59 +92,29 @@ namespace universityManagementSys.Controllers
                 CourseID = CourseID
             };
 
-            _context.enrollments.Add(enrollment);
-            try
-            {
-                _context.SaveChanges();
-            }
-            catch (DbUpdateException ex)
-            {
-                TempData["Error"] = "This course is already assigned to the student!";
-                return RedirectToAction("AssignCourseToStudent", new { id = StudentID });
-            }
+            _enrollmentRepository.AddAsync(enrollment);
+   
+            _enrollmentRepository.SaveAsync().Wait();
 
             TempData["Success"] = "Course assigned successfully!";
             return RedirectToAction("GetAllStudents");
         }
-        public IActionResult GetCourseId()
+        public IActionResult GetCourse()
         {
-            return View("GetCourseId");
-        }
-        public IActionResult GetAllStudentsByCourseID(int id)
-        {
-            var course = _context.courses
-                .Include(c => c.Instructor)
-                .Include(c => c.Semester)
-                .FirstOrDefault(c => c.ID == id);
-
-            if (course == null)
-            {
-                TempData["Error"] = "No course found with this ID.";
-                return RedirectToAction("GetCourseId");
-            }
-
-            var students = _context.enrollments
-    .Where(e => e.CourseID == id)
-    .Include(e => e.Student)
-        .ThenInclude(s => s.Department)
-    .Select(e => e.Student)
-    .ToList();
-
-
-            var vm = new ViewModel
-            {
-                course = course,
-                students = students
-            };
-
-            return View("GetStudentByCourseId", vm);
+            var courses =  _courseRepository.GetCoursesForDropDownLists().Result;   
+            ViewBag.Courses = new SelectList(courses, "ID", "Name");
+            return View("GetStudentByCourseId");
         }
 
+        public async Task<IActionResult> GetStudentsByCourseId(int courseId)
+        {
+            var students = _studentRepository.GetStudentByCourseIdAsync(courseId).Result;
+
+            return PartialView("StudentTablePartialV", students);
+        }
         public IActionResult GetAllStudentsByDepartmentID(int id)
         {
-            var students = _context.students
-                .Where(s => s.DepartmentID == id)
-                .ToList();
+            var students = _studentRepository.GetStudentByDepartmentIdAsync(id).Result;
             if (students == null || !students.Any())
             {
                 return NotFound();
@@ -155,10 +123,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllStudentsByGradeId(int id)
         {
-            var students = _context.enrollments
-                .Where(e => e.GradeID == id)
-                .Select(e => e.Student)
-                .ToList();
+            var students = _studentRepository.GetStudentByGradeIdAsync(id).Result;
             if (students == null || !students.Any())
             {
                 return NotFound();
@@ -167,7 +132,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            var departments = _context.departments
+            var departments = _departmentRepository.GetAllAsync().Result
                 .Select(d => new { d.ID, d.Name })
                 .ToList();
 
@@ -185,22 +150,20 @@ namespace universityManagementSys.Controllers
 
         public IActionResult CreateStudent(Student student)
         {
-                _context.students.Add(student);
-                _context.SaveChanges();
-                TempData["Success"] = "Student added successfully!";
+                _studentRepository.AddAsync(student);
+             _studentRepository.SaveAsync().Wait();
+            TempData["Success"] = "Student added successfully!";
                 return RedirectToAction("GetAllStudents");
         }
         public IActionResult Edit(int id)
         {
-            var student = _context.students
-                .Include(s => s.Department)
-                .FirstOrDefault(s => s.ID == id);
+            var student = _studentRepository.GetByIdAsync(id).Result;
 
-            var departments = _context.departments
+            var departments = _departmentRepository.GetAllAsync().Result
                 .Select(d => new { d.ID, d.Name })
                 .ToList();
 
-            ViewBag.Departments = new SelectList(departments, "ID", "Name", student.DepartmentID);
+            ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
 
             var model = new ViewModel
             {
@@ -214,15 +177,15 @@ namespace universityManagementSys.Controllers
 
         public IActionResult EditStudent(Student student)
         {
-            _context.students.Update(student);
-            _context.SaveChanges();
+            _studentRepository.UpdateAsync(student).Wait();
+            _studentRepository.SaveAsync().Wait();
             TempData["Success"] = "Student updated successfully!";
             return RedirectToAction("GetAllStudents");
         }
 
         public IActionResult Delete(int id)
         {
-            var student = _context.students.FirstOrDefault(s => s.ID == id);
+            var student = _studentRepository.GetByIdAsync(id).Result;
             if (student == null)
             {
                 return NotFound();
@@ -231,14 +194,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult DeleteStudentConfirmed(int id)
         {
-            var student = _context.students.FirstOrDefault(s => s.ID == id);
+            var student = _studentRepository.GetByIdAsync(id).Result;
             if (student == null)
             {
                 return NotFound();
             }
 
-            _context.students.Remove(student);
-            _context.SaveChanges();
+            _studentRepository.DeleteAsync(id).Wait();
+            _studentRepository.SaveAsync().Wait();
             TempData["Success"] = "Student deleted successfully!";
             return RedirectToAction("GetAllStudents");
         }

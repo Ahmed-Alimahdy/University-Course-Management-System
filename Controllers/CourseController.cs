@@ -2,23 +2,34 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
+using universityManagementSys.Filters;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
+using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
     public class CourseController : Controller
     {
-        Context _context;
-
-        public CourseController(Context context)
+      
+        ICourseRepository _courseRepository;
+        IEnrollmentRepository _enrollmentRepository;
+        IInstructorRepository _instructorRepository;
+        ISemesterRepository _semesterRepository;    
+        IDepartmentCourseRepository _departmentCourseRepository;
+        public CourseController(Context context,ICourseRepository courseRepository, IEnrollmentRepository enrollmentRepository, IInstructorRepository instructorRepository,ISemesterRepository semesterRepository,IDepartmentCourseRepository departmentCourseRepository)
         {
-            _context = context;
+            
+            _courseRepository = courseRepository;
+            _instructorRepository = instructorRepository;
+            _semesterRepository = semesterRepository;
+            _enrollmentRepository = enrollmentRepository;
+            _departmentCourseRepository = departmentCourseRepository;
         }
         public IActionResult GetAllCourses()
         {
             
-            var courses = _context.courses.ToList();
+            var courses = _courseRepository.GetAllAsync().Result;
             ViewData["PageTitle"] = "Get all courses";
             ViewData["Courses"] = courses;
             //if (_context.students.)
@@ -29,28 +40,26 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetCourseByID(int id)
         {
-            var course = _context.courses.FirstOrDefault(c => c.ID == id);
+            var course = _courseRepository.GetByIdAsync(id).Result;
             if (course == null)
             {
                 return NotFound();
             }
             return View(course);
         }
+        [ServiceFilter(typeof(ValidateModelNotEmptyFilter))]
         public IActionResult GetAllCoursesByStudentID(int id)
         {
-            var courses = _context.enrollments
+            var courses = _enrollmentRepository.GetAllAsync().Result
                 .Where(e => e.StudentID == id)
                 .Select(e => e.Course)
                 .ToList();
-            if (courses == null || !courses.Any())
-            {
-                return NotFound();
-            }
+       
                 return View(courses);
         }
         public IActionResult GetAllCoursesBySemesterID(int id)
         {
-            var courses = _context.courses
+            var courses = _courseRepository.GetAllAsync().Result
                 .Where(c => c.SemesterID == id)
                 .ToList();
             if (courses == null || !courses.Any())
@@ -61,7 +70,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllCoursesByDepartmentId(int id)
         {
-            var courses = _context.departmentCourses
+            var courses = _departmentCourseRepository.GetAllAsync().Result
                 .Where(dc => dc.DepartmentID == id)
                 .Select(dc => dc.Course)
                 .ToList();
@@ -73,7 +82,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult GetAllCoursesByInstructorID(int id)
         {
-            var courses = _context.courses
+            var courses = _courseRepository.GetAllAsync().Result
                 .Where(c => c.InstructorID == id)
                 .ToList();
             if (courses == null || !courses.Any())
@@ -84,11 +93,11 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            var instructors = _context.instructors
+            var instructors = _instructorRepository.GetAllAsync().Result
                  .Select(d => new { d.ID, d.FirstName,d.LastName })
                  .ToList();
 
-            var semesters = _context.semesters
+            var semesters = _semesterRepository.GetAllAsync().Result    
                  .Select(d => new { d.ID, d.Name })
                  .ToList();
 
@@ -114,14 +123,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult CreateCourse(Course course)
         {
-            _context.courses.Add(course);
-            _context.SaveChanges();
+            _courseRepository.AddAsync(course).Wait();
+            _courseRepository.SaveAsync().Wait();
             TempData["Success"] = "Course added successfully!";
             return RedirectToAction("GetAllCourses");
         }
         public IActionResult Edit(int id)
         {
-            var course = _context.courses.FirstOrDefault(s => s.ID == id);
+            var course = _courseRepository.GetByIdAsync(id).Result;
             if (course == null)
             {
                 return NotFound();
@@ -130,14 +139,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult EditCourse(Course course)
         {
-            _context.courses.Update(course);
-            _context.SaveChanges();
+            _courseRepository.UpdateAsync(course).Wait();
+            _courseRepository.SaveAsync().Wait();
             TempData["Success"] = "Course updated successfully!";
             return RedirectToAction("GetAllCourses");
         }
         public IActionResult Delete(int id)
         {
-            var course = _context.courses.FirstOrDefault(s => s.ID == id);
+            var course = _courseRepository.GetByIdAsync(id).Result;
             if (course == null)
             {
                 return NotFound();
@@ -146,14 +155,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult DeleteCourseConfirmed(int id)
         {
-            var course = _context.courses.FirstOrDefault(s => s.ID == id);
+            var course = _courseRepository.GetByIdAsync(id).Result;
             if (course == null)
             {
                 return NotFound();
             }
 
-            _context.courses.Remove(course);
-            _context.SaveChanges();
+            _courseRepository.DeleteAsync(id).Wait();
+            _courseRepository.SaveAsync().Wait();
             TempData["Success"] = "Courses deleted successfully!";
             return RedirectToAction("GetAllCourses");
         }

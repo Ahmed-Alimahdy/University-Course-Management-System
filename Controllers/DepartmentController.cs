@@ -2,20 +2,26 @@
 using universityManagementSys.Data;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
+using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.wwwroot
 {
     public class DepartmentController : Controller
     {
-        Context _context;
+       
+        IDepartmentRepository _departmentRepository;
+        IDepartmentCourseRepository _departmentCourseRepository;
+        IStudentRepository _studentRepository;
 
-        public DepartmentController(Context context)
+        public DepartmentController(IDepartmentRepository departmentRepository, IDepartmentCourseRepository departmentCourseRepository, IStudentRepository studentRepository)
         {
-            _context = context;
+            _departmentRepository = departmentRepository;
+            _departmentCourseRepository = departmentCourseRepository;
+            _studentRepository = studentRepository;
         }
         public IActionResult GetAllDepartments()
         {
-            var departments = _context.departments.ToList();
+            var departments = _departmentRepository.GetAllAsync().Result;
             if (departments == null || !departments.Any())
             {
                 return NotFound();
@@ -24,7 +30,7 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult GetDepartmentByID(int id)
         {
-            var department = _context.departments.FirstOrDefault(d => d.ID == id);
+            var department = _departmentRepository.GetByIdAsync(id).Result;
             if (department == null)
             {
                 return NotFound();
@@ -33,7 +39,7 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult GetAllDepartmentByCourseId(int id)
         {
-            var courses = _context.departmentCourses
+            var courses = _departmentCourseRepository.GetAllAsync().Result
                 .Where(dc => dc.DepartmentID == id)
                 .Select(dc => dc.Course)
                 .ToList();
@@ -45,12 +51,12 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult GetDepartmentByStudentId(int id)
         {
-            var student = _context.students.FirstOrDefault(s => s.ID == id);
+            var student = _studentRepository.GetByIdAsync(id).Result;
             if (student == null)
             {
                 return NotFound();
             }
-            var department = _context.departments.FirstOrDefault(d => d.ID == student.DepartmentID);
+            var department = _departmentRepository.GetAllAsync().Result.FirstOrDefault(d => d.ID == student.DepartmentID);
             if (department == null)
             {
                 return NotFound();
@@ -63,15 +69,15 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult CreateDepartment(Department department)
         {
-            _context.departments.Add(department);
-            _context.SaveChanges();
+            _departmentRepository.AddAsync(department).Wait();
+            _departmentRepository.SaveAsync().Wait();
             TempData["Success"] = "Department added successfully!";
             return RedirectToAction("GetAllDepartments");
         }
         public IActionResult Edit(int id)
         {
 
-            var department = _context.departments.FirstOrDefault(s => s.ID == id);
+            var department = _departmentRepository.GetByIdAsync(id).Result;
             if (department == null)
             {
                 return NotFound();
@@ -80,15 +86,15 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult EditDepartment(Department department)
         {
-            _context.departments.Update(department);
-            _context.SaveChanges();
+            _departmentRepository.UpdateAsync(department.ID, department).Wait();
+            _departmentRepository.SaveAsync().Wait();
             TempData["Success"] = "Department updated successfully!";
             return RedirectToAction("GetAllDepartments");
         }
         public IActionResult Delete(int id)
         {
           
-            var department = _context.departments.FirstOrDefault(s => s.ID == id);
+            var department =_departmentRepository.GetByIdAsync(id).Result;
             if (department == null)
             {
                 return NotFound();
@@ -97,14 +103,14 @@ namespace universityManagementSys.wwwroot
         }
         public IActionResult DeleteDepartmentConfirmed(int id)
         {
-            var department = _context.departments.FirstOrDefault(s => s.ID == id);
+            var department = _departmentRepository.GetByIdAsync(id).Result;
             if (department == null)
             {
                 return NotFound();
             }
 
-            _context.departments.Remove(department);
-            _context.SaveChanges();
+            _departmentRepository.DeleteAsync(id).Wait();
+            _departmentRepository.SaveAsync().Wait();
             TempData["Success"] = "Department deleted successfully!";
             return RedirectToAction("GetAllDepartments");
         }

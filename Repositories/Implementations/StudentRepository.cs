@@ -39,7 +39,23 @@ namespace universityManagementSys.Repositories.Implementations
 
         public async Task<Student?> GetByIdAsync(int id)
         {
-            return await _context.students.Include(s => s.Department).FirstOrDefaultAsync(s => s.ID == id);
+            return await _context.students
+                .Include(s => s.Department)
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Course)
+                        .ThenInclude(c => c.Instructor)
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Course)
+                        .ThenInclude(c => c.Semester)
+                .FirstOrDefaultAsync(s => s.ID == id);
+        }
+
+        public async Task<Student?> GetByIdForAssignCourseAsync(int id)
+        {
+            return await _context.students
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Course)
+                .FirstOrDefaultAsync(s => s.ID == id);
         }
 
         public async Task<Student?> GetByEmailAsync(string email)
@@ -75,6 +91,31 @@ namespace universityManagementSys.Repositories.Implementations
             await SaveAsync();
 
             return true;
+        }
+
+        public async Task<IEnumerable<Student>> GetStudentByCourseIdAsync(int courseId)
+        {
+            return await _context.enrollments
+                .Where(e => e.Course.ID == courseId)
+                .Include(e => e.Student)
+                    .ThenInclude(s => s.Department)
+                .Select(e => e.Student)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Student>> GetStudentByDepartmentIdAsync(int departmentId)
+        {
+            return await _context.students
+                .Where(s => s.DepartmentID == departmentId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Student>> GetStudentByGradeIdAsync(int gradeId)
+        {
+           return await _context.enrollments
+                .Where(e => e.GradeID == gradeId)
+                .Select(e => e.Student)
+                .ToListAsync();
         }
     }
 }
