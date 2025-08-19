@@ -1,13 +1,17 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using universityManagementSys.Data;
 using universityManagementSys.DTOs;
+using universityManagementSys.Filters;
 using universityManagementSys.Models;
 using universityManagementSys.Repositories.Implementations;
 using universityManagementSys.Repositories.Interfaces;
 using universityManagementSys.Services.Implementations;
 using universityManagementSys.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace universityManagementSys
 {
@@ -25,7 +29,8 @@ namespace universityManagementSys
 
             builder.Services.AddDbContext<Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            builder.Services.AddScoped<ValidateModelNotEmptyFilter>();
+            builder.Services.AddScoped<DbExceptionFilter>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<ICourseService, CourseService>();
 
@@ -38,6 +43,15 @@ namespace universityManagementSys
 
             builder.Services.AddScoped<IStudentRepository, StudentRepository>();
             builder.Services.AddScoped<IStudentService, StudentService>();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(conf =>
+            {
+                conf.Password.RequireDigit = true;
+                conf.Password.RequireLowercase = true;
+                conf.Password.RequireUppercase = true;
+                conf.Password.RequiredLength = 8;
+            })
+                  .AddEntityFrameworkStores<Context>();
+
 
             var app = builder.Build();
 

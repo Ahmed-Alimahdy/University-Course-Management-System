@@ -2,47 +2,47 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
+using universityManagementSys.Filters;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
+using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
     public class InstructorController : Controller
     {
-        Context _context;
-
-        public InstructorController(Context context)
+        IInstructorRepository _instructorRepository;
+        ICourseRepository _courseRepository;
+        public InstructorController(Context context, IInstructorRepository instructorRepository,ICourseRepository courseRepository)
         {
-            _context = context;
+            _instructorRepository = instructorRepository;
+            _courseRepository = courseRepository;
         }
+        
         public IActionResult GetAllInstructors()
         {
 
-            var instructors = _context.instructors
-              .ToList();
+            var instructors = _instructorRepository.GetAllAsync().Result;
+             
 
             ViewBag.NoDataMessage = !instructors.Any() ? "No instructors found." : " ";
             return View("GetInstructors", instructors);
         }
+        [ServiceFilter(typeof(ValidateModelNotEmptyFilter))]
         public IActionResult GetInstructorById(int id)
         {
-            var instructor = _context.instructors.FirstOrDefault(i => i.ID == id);
-            if (instructor == null)
-            {
-                return NotFound();
-            }
+            var instructor = _instructorRepository.GetByIdAsync(id).Result;
+          
             return View(instructor);
         }
+        [ServiceFilter(typeof(ValidateModelNotEmptyFilter))]
         public IActionResult GetInstructorbbyCourseId(int id)
         {  
-            var instructor = _context.courses
+            var instructor = _courseRepository.GetAllAsync().Result
                 .Where(c => c.ID == id)
                 .Select(c => c.Instructor)
                 .FirstOrDefault();
-            if (instructor == null)
-            {
-                return NotFound();
-            }
+            
             return View(instructor);
         }
         public IActionResult Create()
@@ -58,15 +58,15 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult CreateInstructor(Instructor instructor)
         {
-            _context.instructors.Add(instructor);
-            _context.SaveChanges();
+            _instructorRepository.AddAsync(instructor).Wait();
+           _instructorRepository.SaveAsync().Wait();
             TempData["Success"] = "instructor added successfully!";
             return RedirectToAction("GetAllInstructors");
         }
         public IActionResult Edit(int id)
         {
-            var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
-         
+            var instructor = _instructorRepository.GetByIdAsync(id).Result;
+
             if (instructor == null)
             {
                 return NotFound();
@@ -75,15 +75,15 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult EditInstructor(Instructor instructor)
         {
-            _context.instructors.Update(instructor);
-            _context.SaveChanges();
+            _instructorRepository.UpdateAsync(instructor).Wait();
+            _instructorRepository.SaveAsync().Wait();   
             TempData["Success"] = "Instructor updated successfully!";
             return RedirectToAction("GetAllInstructors");
         }
         public IActionResult Delete(int id)
         {
   
-            var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
+            var instructor = _instructorRepository.GetByIdAsync(id).Result;
             if (instructor == null)
             {
                 return NotFound();
@@ -92,14 +92,14 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult DeleteInastructorConfirmed(int id)
         {
-            var instructor = _context.instructors.FirstOrDefault(s => s.ID == id);
+            var instructor = _instructorRepository.GetByIdAsync(id).Result;
             if (instructor == null)
             {
                 return NotFound();
             }
 
-            _context.instructors.Remove(instructor);
-            _context.SaveChanges();
+            _instructorRepository.DeleteAsync(id).Wait();
+            _instructorRepository.SaveAsync().Wait();
             TempData["Success"] = "Instructor deleted successfully!";
             return RedirectToAction("GetAllInstructors");
         }

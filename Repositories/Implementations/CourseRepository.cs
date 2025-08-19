@@ -35,6 +35,12 @@ namespace universityManagementSys.Repositories.Implementations
             return await _context.courses.Include(c => c.Instructor).Include(c => c.Semester).ToListAsync();
         }
 
+        public async Task<IEnumerable<object>> GetCoursesForDropDownLists()
+        {
+            return await _context.courses
+                .Select(c => new { c.ID, c.Name })
+                .ToListAsync();
+        }
         public async Task<Course?> GetByIdAsync(int id)
         {
             return await _context.courses.Include(c => c.Instructor).Include(c => c.Semester).FirstOrDefaultAsync(c => c.ID == id);

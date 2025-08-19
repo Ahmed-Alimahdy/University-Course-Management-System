@@ -3,22 +3,25 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using universityManagementSys.Data;
 using universityManagementSys.Models;
+using universityManagementSys.Repositories.Implementations;
+using universityManagementSys.Repositories.Interfaces;
 
 namespace universityManagementSys.Controllers
 {
     public class SemesterController : Controller
     {
-        Context _context;
+       
+        ISemesterRepository _semesterRepository;
 
-        public SemesterController(Context context)
+        public SemesterController(ISemesterRepository semesterRepository)
         {
-            _context = context;
+            
+            _semesterRepository = semesterRepository;
         }
         public IActionResult GetAllSemesters()
         {
-            var semesters = _context.semesters
-               .ToList();
-
+            var semesters = _semesterRepository.GetAllAsync().Result;
+               
             ViewBag.NoDataMessage = !semesters.Any() ? "No Semesters found." : " ";
             return View("GetSemesters", semesters);
         }
@@ -30,10 +33,57 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult AddSemester(Semester semester)
         {     
-           _context.semesters.Add(semester);
-           _context.SaveChanges();       
-           return RedirectToAction("GetAllSemesters");
+           _semesterRepository.AddAsync(semester).Wait();
+            _semesterRepository.SaveAsync().Wait();
+            return RedirectToAction("GetAllSemesters");
         }
+        public IActionResult GetSemesterByID(int id)
+        {
+            var semester = _semesterRepository.GetByIdAsync(id).Result;
+            if (semester == null)
+            {
+                return NotFound();
+            }
+            return View(semester);
+        }
+        public IActionResult Edit(int id)
+        {
+            var semester = _semesterRepository.GetByIdAsync(id).Result;
+            if (semester == null)
+            {
+                return NotFound();
+            }
+            return View(semester);
+        }
+        public IActionResult EditSemester(Semester semester)
+        {
+            _semesterRepository.UpdateAsync(semester.ID,semester).Wait();
+            _semesterRepository.SaveAsync().Wait();
+            TempData["Success"] = "Semester updated successfully!";
+            return RedirectToAction("GetAllSemesters");
+        }
+        public IActionResult Delete(int id)
+        {
+            var semester = _semesterRepository.GetByIdAsync(id).Result;
+            if (semester == null)
+            {
+                return NotFound();
+            }
+            return View(semester);
+        }
+        public IActionResult DeleteSemesterConfirmed(int id)
+        {
+            var semester = _semesterRepository.GetByIdAsync(id).Result;
+            if (semester == null)
+            {
+                return NotFound();
+            }
 
-    }
+            _semesterRepository.DeleteAsync(id).Wait();
+            _semesterRepository.SaveAsync().Wait();
+            TempData["Success"] = "Semester deleted successfully!";
+            return RedirectToAction("GetAllSemesters");
+
+        }
+        }
 }
