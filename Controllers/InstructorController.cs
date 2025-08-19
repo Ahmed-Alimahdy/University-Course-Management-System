@@ -47,7 +47,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            var model = new ViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Add instructor",
                 WelcomeMessage = "Please fill in the instructor details.",

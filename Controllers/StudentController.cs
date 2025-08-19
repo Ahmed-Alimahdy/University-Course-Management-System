@@ -35,7 +35,7 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoSearch()
         {
             ViewBag.functionName = "GetStudentByID";
-            ViewModel modelView = new ViewModel
+            dataViewModel modelView = new dataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
@@ -55,7 +55,7 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoAssign()
         {
             ViewBag.functionName = "AssignCourseToStudent";
-            ViewModel modelView = new ViewModel
+            dataViewModel modelView = new dataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
@@ -75,7 +75,7 @@ namespace universityManagementSys.Controllers
             }
             var courses = _courseRepository.GetCoursesForDropDownLists().Result;
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
-            var model = new ViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Assign Course to Student",
                 WelcomeMessage = "Please select a course to assign to the student.",
@@ -138,7 +138,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name");
 
-            var model = new ViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Create Student",
                 WelcomeMessage = "Please fill in the student details.",
@@ -165,7 +165,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
 
-            var model = new ViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Edit Student",
                 WelcomeMessage = "Please update the student details.",

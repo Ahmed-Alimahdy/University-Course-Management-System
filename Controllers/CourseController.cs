@@ -113,7 +113,7 @@ namespace universityManagementSys.Controllers
             ViewBag.Semester = new SelectList(semesters, "ID", "Name");
 
 
-            ViewModel viewModel = new ViewModel
+            dataViewModel viewModel = new dataViewModel
             {
                 PageTitle = "Add Course",
                 WelcomeMessage = "Please fill in the course details.",
