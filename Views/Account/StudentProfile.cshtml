@@ -20,9 +20,6 @@
             <div class="row align-items-center">
                 <!-- Left: Profile picture -->
                 <div class="col-md-4 text-center">
-                    <img src="~/images/student-default.png" alt="Profile Picture"
-                         class="img-fluid rounded-circle shadow mb-3"
-                         style="max-width: 160px;" />
                     <h4 class="fw-bold">@Model.FirstName @Model.LastName</h4>
                     <p class="text-muted">🆔 ID: @Model.ID</p>
                 </div>
@@ -49,7 +46,7 @@
             </div>
 
             <!-- Courses Section -->
-            <hr />
+            <hr/>
             <h4 class="fw-bold mt-4 text-secondary">📘 My Courses</h4>
 
             @if (Model.Enrollments != null && Model.Enrollments.Any())
