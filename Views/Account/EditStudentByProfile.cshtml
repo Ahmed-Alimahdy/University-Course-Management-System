@@ -4,56 +4,74 @@
     ViewData["Title"] = "Edit Student";
 }
 
-<h2>Edit Student</h2>
+<div class="container mt-5">
 
-<form asp-action="EditProfile" method="post">
-
-    <input type="hidden" asp-for="ID" />
-
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">✏️ Edit Student Profile</h1>
+        <p class="text-muted">Update your personal details below.</p>
+        <hr class="w-25 mx-auto" />
     </div>
 
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
+    <!-- Form Card -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4">
+
+            <form asp-action="EditProfile" method="post">
+                <input type="hidden" asp-for="ID" />
+
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label fw-bold"></label>
+                    <input asp-for="FirstName" class="form-control rounded-pill" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label fw-bold"></label>
+                    <input asp-for="LastName" class="form-control rounded-pill" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DateOfBirth" class="form-label fw-bold"></label>
+                    <input asp-for="DateOfBirth" type="date" class="form-control rounded-pill" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-bold"></label>
+                    <input asp-for="Email" type="email" class="form-control rounded-pill" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNum" class="form-label fw-bold"></label>
+                    <input asp-for="PhoneNum" class="form-control rounded-pill" />
+                    <span asp-validation-for="PhoneNum" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DepartmentID" class="form-label fw-bold"></label>
+                    <select asp-for="DepartmentID" class="form-select rounded-pill" asp-items="ViewBag.Departments">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentID" class="text-danger small"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm me-2">
+                        💾 Save Changes
+                    </button>
+                    <a asp-action="GetStudentProfile" asp-controller="Account" asp-route-id="@Model.ID"
+                       class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                        ❌ Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="DateOfBirth"></label>
-        <input asp-for="DateOfBirth" type="date" class="form-control" />
-        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" type="email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="PhoneNum"></label>
-        <input asp-for="PhoneNum" class="form-control" />
-        <span asp-validation-for="PhoneNum" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="DepartmentID" class="control-label"></label>
-        <select asp-for="DepartmentID" class="form-control" asp-items="ViewBag.Departments">
-            <option value="">-- Select Department --</option>
-        </select>
-        <span asp-validation-for="DepartmentID" class="text-danger"></span>
-    </div>
-
-
-
-    <button type="submit" class="btn btn-primary">Update Student</button>
-    <a asp-action="GetStudentProfile" asp-controller="Account" asp-route-id="@Model.ID" class="btn btn-secondary">Cancel</a>
-  
-</form>
+</div>
 
 @section Scripts {
     @{

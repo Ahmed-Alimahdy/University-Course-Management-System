@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
 using universityManagementSys.Repositories.Implementations;
@@ -163,7 +164,7 @@ namespace universityManagementSys.Controllers
 
         public async Task<IActionResult> AssignCourseToStudentProfile(int id)
         {
-            var student = studentRepository.GetByIdForAssignCourseAsync(id).Result;
+            var student = await studentRepository.GetByIdForAssignCourseAsync(id);
             if (student == null)
             {
                 return NotFound();
@@ -177,7 +178,7 @@ namespace universityManagementSys.Controllers
           
             return View("AssignCourseByProfile", student);
         }
-        public IActionResult AssignCourseToStudentPost(int StudentID, int CourseID)
+        public async Task<IActionResult> AssignCourseToStudentPost(int StudentID, int CourseID)
         {
             var enrollment = new Enrollment
             {
@@ -185,12 +186,12 @@ namespace universityManagementSys.Controllers
                 CourseID = CourseID
             };
 
-            _enrollmentRepository.AddAsync(enrollment);
+            await _enrollmentRepository.AddAsync(enrollment);
 
-            _enrollmentRepository.SaveAsync().Wait();
+            await _enrollmentRepository.SaveAsync();
 
             TempData["Success"] = "Course assigned successfully!";
-            return RedirectToAction("GetAllStudents");
+            return RedirectToAction("GetStudentProfile");
         }
         public async Task<IActionResult> EditStudent(Student student)
         {
@@ -230,8 +231,6 @@ namespace universityManagementSys.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstructor(Instructor instructor)
         {
-          
-
             await instructorRepository.UpdateAsync(instructor);
 
             return RedirectToAction("GetInstructorProfile", new { id = instructor.ID });
@@ -258,19 +257,44 @@ namespace universityManagementSys.Controllers
                     if (found)
                     {
                         await signInManager.SignInAsync(user, newUser.RememberMe);
-                        if (User.IsInRole("Admin"))
+
+
+                        var roles = await userManager.GetRolesAsync(user);
+
+                        if (roles.Contains("Admin"))
                         {
                             return RedirectToAction("AdminDashBoard");
                         }
-                      
+
+                        if (roles.Contains("Student"))
+                        {
+                            var student = await studentRepository.GetByEmailAsync(user.Email);
+                            if (student != null)
+                            {
+                                return RedirectToAction("GetStudentProfile", new { id = student.ID });
+                            }
+                        }
+
+                        if (roles.Contains("Instructor"))
+                        {
+                            var instructor = await instructorRepository.GetByEmailAsync(user.Email);
+                            if (instructor != null)
+                            {
+                                return RedirectToAction("GetInstructorProfile", new { id = instructor.ID });
+                            }
+                        }
+
+
                         return RedirectToAction("Index", "Home");
                     }
 
-                    ModelState.AddModelError("password", "password is incorrect.");
+                    ModelState.AddModelError("Password", "Password is incorrect.");
+                    return View("LoginView", newUser);
                 }
 
-                ModelState.AddModelError("username", "Username is incorrect.");
+                ModelState.AddModelError("UserName", "Username is incorrect.");
             }
+
             return View("LoginView", newUser);
         }
 

@@ -5,88 +5,106 @@
 }
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Register</h2>
-    <hr />
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">Register</h1>
+        <p class="text-muted">Create a new account to access the university system.</p>
+        <hr class="w-25 mx-auto" />
+    </div>
 
     <!-- Success Message -->
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success shadow-sm rounded-pill text-center">
+            @TempData["Success"]
+        </div>
     }
 
-  
+    <!-- Form Card -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-body p-4">
 
-    <form asp-action="Register" method="post">
-        <!-- Email -->
-        <div class="form-group mb-3">
-            <label asp-for="Email"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <form asp-action="Register" method="post">
+                <!-- Email -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-bold"></label>
+                    <input asp-for="Email" class="form-control rounded-pill" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <!-- First Name -->
+                <div class="mb-3">
+                    <label asp-for="Firstname" class="form-label fw-bold"></label>
+                    <input asp-for="Firstname" class="form-control rounded-pill" />
+                    <span asp-validation-for="Firstname" class="text-danger small"></span>
+                </div>
+
+                <!-- Last Name -->
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label fw-bold"></label>
+                    <input asp-for="LastName" class="form-control rounded-pill" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+
+                <!-- Username -->
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label fw-bold"></label>
+                    <input asp-for="UserName" class="form-control rounded-pill" />
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+
+                <!-- Phone -->
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                    <input asp-for="PhoneNumber" class="form-control rounded-pill" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-bold"></label>
+                    <input asp-for="Password" type="password" class="form-control rounded-pill" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control rounded-pill" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <!-- Role -->
+                <div class="mb-3">
+                    <label class="fw-bold">Role</label><br />
+                    <div class="form-check form-check-inline">
+                        <input asp-for="Role" type="radio" value="Student" class="form-check-input" id="roleStudent" />
+                        <label class="form-check-label" for="roleStudent">Student</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input asp-for="Role" type="radio" value="Instructor" class="form-check-input" id="roleInstructor" />
+                        <label class="form-check-label" for="roleInstructor">Instructor</label>
+                    </div>
+                </div>
+
+                <!-- Extra form for Student/Instructor -->
+                <div id="extraForm" class="mt-3"></div>
+
+                <!-- Buttons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm">
+                        🚀 Register
+                    </button>
+                    <a asp-action="Login" asp-controller="Account"
+                       class="btn btn-outline-secondary px-4 rounded-pill shadow-sm ms-2">
+                        🔑 Already have an account? Login
+                    </a>
+                </div>
+            </form>
         </div>
-
-        <!-- UserName -->
-      
-        <div class="form-group mb-3">
-            <label asp-for="Firstname"></label>
-            <input asp-for="Firstname" class="form-control" />
-            <span asp-validation-for="Firstname" class="text-danger"></span>
-        </div>
-         <div class="form-group mb-3">
-            <label asp-for="LastName"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
-        </div>
-
-        <div class="form-group mb-3">
-            <label asp-for="UserName"></label>
-            <input asp-for="UserName" class="form-control" />
-            <span asp-validation-for="UserName" class="text-danger"></span>
-        </div>
-
-        <!-- Phone -->
-        <div class="form-group mb-3">
-            <label asp-for="PhoneNumber"></label>
-            <input asp-for="PhoneNumber" class="form-control" />
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-
-        <!-- Password -->
-        <div class="form-group mb-3">
-            <label asp-for="Password"></label>
-            <input asp-for="Password" type="password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="form-group mb-3">
-            <label asp-for="ConfirmPassword"></label>
-            <input asp-for="ConfirmPassword" type="password" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-
-        <!-- Role -->
-        <div class="form-group mb-3">
-            <label>Role</label><br />
-            <div class="form-check">
-                <input asp-for="Role" type="radio" value="Admin" class="form-check-input" id="roleAdmin" />
-                <label class="form-check-label" for="roleAdmin">Admin</label>
-            </div>
-            <div class="form-check">
-                <input asp-for="Role" type="radio" value="Student" class="form-check-input" id="roleStudent" />
-                <label class="form-check-label" for="roleStudent">Student</label>
-            </div>
-            <div class="form-check">
-                <input asp-for="Role" type="radio" value="Instructor" class="form-check-input" id="roleInstructor" />
-                <label class="form-check-label" for="roleInstructor">Instructor</label>
-            </div>
-        </div>
-
-       
-        <div id="extraForm"></div>
-
-        <button type="submit" class="btn btn-primary mt-3">Register</button>
-  </form>
-
+    </div>
+</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

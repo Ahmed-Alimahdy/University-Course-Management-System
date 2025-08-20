@@ -1,15 +1,89 @@
 ﻿@model universityManagementSys.Models.Instructor
 
-<div class="card p-3 shadow-sm">
-    <h4>Instructor Info</h4>
-    <p><strong>ID:</strong> @Model.ID</p>
-    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
-    <p><strong>Email:</strong> @Model.Email</p>
-    <p><strong>Phone:</strong> @Model.PhoneNum</p>
-    <p><strong>Hire Date:</strong> @Model.HireDate.ToShortDateString()</p>
-    <p><strong>Title:</strong> @Model.Title</p>
+@{
+    ViewData["Title"] = "Instructor Profile";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-3">
+        <!-- Header -->
+        <h2 class="text-center mb-4 text-primary">👨‍🏫 Instructor Profile</h2>
+        <hr />
+
+        <div class="row">
+            <!-- Profile Picture -->
+            <div class="col-md-4 text-center">
+                <img src="~/images/instructor-default.png" alt="Instructor Picture"
+                     class="img-fluid rounded-circle shadow mb-3" style="max-width: 150px;" />
+                <h4>@Model.FirstName @Model.LastName</h4>
+                <p class="text-muted">Instructor ID: @Model.ID</p>
+                <span class="badge bg-info text-dark">@Model.Title</span>
+            </div>
+
+            <!-- Info Section -->
+            <div class="col-md-8">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Email</th>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <th>Phone</th>
+                            <td>@Model.PhoneNum</td>
+                        </tr>
+                        <tr>
+                            <th>Hire Date</th>
+                            <td>@Model.HireDate.ToShortDateString()</td>
+                        </tr>
+                        <tr>
+                            <th>Title</th>
+                            <td>@Model.Title</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+        <hr />
+        <h4 class="mt-4">📘 Courses Taught</h4>
+
+        @if (Model.Courses != null && Model.Courses.Any())
+        {
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Course Name</th>
+                        <th>Credits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var course in Model.Courses)
+                    {
+                        <tr>
+                            <td>@course.ID</td>
+                            <td>@course.Name</td>
+                            <td>@course.CreditHours</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted mt-2">This instructor is not assigned to any courses yet.</p>
+        }
+
+        <!-- Action Buttons -->
+        <div class="mt-4 d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary rounded-pill px-4">
+                ✏️ Edit Profile
+            </a>
+            <a asp-action="Logout" class="btn btn-danger rounded-pill px-4">
+                🚪 Logout
+            </a>
+        </div>
+    </div>
 </div>
-
-<br />
-
-<a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">Edit Profile</a>
