@@ -1,14 +1,14 @@
-﻿@model universityManagementSys.Models.Student
+﻿@model universityManagementSys.Models.Semester
 
 @{
-    ViewData["Title"] = "Delete Student";
+    ViewData["Title"] = "Delete Semester";
 }
 
 <div class="container mt-4">
     <!-- Header -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-danger">🗑️ Delete Student</h1>
-        <p class="text-muted">Are you sure you want to delete this student?</p>
+        <h1 class="fw-bold text-danger">🗑️ Delete Semester</h1>
+        <p class="text-muted">Are you sure you want to delete this semester?</p>
         <hr class="w-25 mx-auto" />
     </div>
 
@@ -19,24 +19,21 @@
                 <dt class="col-sm-3 fw-semibold">ID</dt>
                 <dd class="col-sm-9">@Model.ID</dd>
 
-                <dt class="col-sm-3 fw-semibold">First Name</dt>
-                <dd class="col-sm-9">@Model.FirstName</dd>
+                <dt class="col-sm-3 fw-semibold">Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
 
-                <dt class="col-sm-3 fw-semibold">Last Name</dt>
-                <dd class="col-sm-9">@Model.LastName</dd>
+                <dt class="col-sm-3 fw-semibold">Start Date</dt>
+                <dd class="col-sm-9">@Model.StartDate.ToString("yyyy-MM-dd")</dd>
 
-                <dt class="col-sm-3 fw-semibold">Email</dt>
-                <dd class="col-sm-9">@Model.Email</dd>
-
-                <dt class="col-sm-3 fw-semibold">Phone</dt>
-                <dd class="col-sm-9">@Model.PhoneNum</dd>
+                <dt class="col-sm-3 fw-semibold">End Date</dt>
+                <dd class="col-sm-9">@Model.EndDate.ToString("yyyy-MM-dd")</dd>
             </dl>
 
             <!-- Action buttons -->
-            <form asp-action="DeleteStudentConfirmed" method="post" class="mt-4">
+            <form asp-action="DeleteSemesterConfirmed" method="post" class="mt-4">
                 <input type="hidden" asp-for="ID" />
                 <div class="d-flex justify-content-between">
-                    <a asp-action="GetAllStudents"
+                    <a asp-action="GetAllSemesters"
                        class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
                         ⬅️ Cancel
                     </a>

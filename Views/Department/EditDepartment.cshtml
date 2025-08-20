@@ -1,31 +1,24 @@
 ﻿@model universityManagementSys.Models.Department
 
 @{
-    ViewData["Title"] = "Add Department";
+    ViewData["Title"] = "Edit Department";
 }
 
 <div class="container mt-5">
     <!-- Header -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-success">➕ Add Department</h1>
-        <p class="text-muted">Fill out the form below to add a new department.</p>
+        <h1 class="fw-bold text-primary">🏢 Edit Department</h1>
+        <p class="text-muted">Update the department details below.</p>
         <hr class="w-25 mx-auto" />
     </div>
-
-    <!-- Success Message -->
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success text-center shadow-sm rounded-pill">
-            @TempData["Success"]
-        </div>
-    }
 
     <!-- Card -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-lg border-0 rounded-3">
                 <div class="card-body p-4">
-                    <form asp-action="CreateDepartment" method="post">
+                    <form asp-action="EditDepartment" method="post">
+                        <input type="hidden" asp-for="ID" />
 
                         <!-- Department Name -->
                         <div class="mb-3">
@@ -34,7 +27,7 @@
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
-                        <!-- Department Description -->
+                        <!-- Description -->
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label fw-semibold"></label>
                             <textarea asp-for="Description"
@@ -50,8 +43,8 @@
                                 ⬅️ Cancel
                             </a>
                             <button type="submit"
-                                    class="btn btn-success px-4 rounded-pill shadow-sm">
-                                ✅ Create Department
+                                    class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                💾 Update Department
                             </button>
                         </div>
                     </form>

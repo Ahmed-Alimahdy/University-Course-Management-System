@@ -1,0 +1,49 @@
+﻿@model universityManagementSys.Models.Department
+
+@{
+    ViewData["Title"] = "Delete Department";
+}
+
+<div class="container mt-5">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-danger">🗑️ Delete Department</h1>
+        <p class="text-muted">Are you sure you want to delete this department?</p>
+        <hr class="w-25 mx-auto" />
+    </div>
+
+    <!-- Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-semibold">ID</dt>
+                        <dd class="col-sm-9">@Model.ID</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Name</dt>
+                        <dd class="col-sm-9">@Model.Name</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Description</dt>
+                        <dd class="col-sm-9">@Model.Description</dd>
+                    </dl>
+
+                    <!-- Action buttons -->
+                    <form asp-action="DeleteDepartmentConfirmed" method="post" class="mt-4">
+                        <input type="hidden" asp-for="ID" />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="GetAllDepartments"
+                               class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                                ⬅️ Cancel
+                            </a>
+                            <button type="submit"
+                                    class="btn btn-danger px-4 rounded-pill shadow-sm">
+                                🗑️ Confirm Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

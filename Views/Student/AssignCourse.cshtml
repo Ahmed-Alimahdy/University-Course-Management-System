@@ -1,40 +1,65 @@
-﻿@model universityManagementSys.ModelView.DataViewModel
+﻿@model universityManagementSys.ModelView.dataViewModel
 
 @{
     ViewData["Title"] = Model.PageTitle;
 }
 
-<h2>@Model.PageTitle</h2>
-<p>@Model.WelcomeMessage</p>
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">🎓 @Model.PageTitle</h1>
+        <p class="text-muted">@Model.WelcomeMessage</p>
+        <hr class="w-25 mx-auto" />
     </div>
-}
 
-<div class="card p-3 shadow-sm">
-    <h4>Student Info</h4>
-    <p><strong>ID:</strong> @Model.student.ID</p>
-    <p><strong>Name:</strong> @Model.student.FirstName @Model.student.LastName</p>
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger shadow-sm">
+            ⚠️ @TempData["Error"]
+        </div>
+    }
+
+    <!-- Student Info Card -->
+    <div class="card shadow-lg border-0 mb-4">
+        <div class="card-header bg-light fw-semibold">
+            🧑 Student Info
+        </div>
+        <div class="card-body">
+            <p><strong>ID:</strong> @Model.student.ID</p>
+            <p><strong>Name:</strong> @Model.student.FirstName @Model.student.LastName</p>
+        </div>
+    </div>
+
+    <!-- Course Assignment Form -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-light fw-semibold">
+            📚 Assign Course
+        </div>
+        <div class="card-body">
+            <form asp-action="AssignCourseToStudentPost" method="post">
+                <input type="hidden" name="StudentID" value="@Model.student.ID" />
+
+                <div class="mb-3">
+                    <label for="CourseID" class="form-label fw-semibold">Select Course</label>
+                    <select id="CourseID" name="CourseID" class="form-select shadow-sm" asp-items="ViewBag.Courses">
+                        <option value="">-- Select Course --</option>
+                    </select>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="GetAllStudents" class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                        ⬅️ Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm">
+                        ✅ Assign Course
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<br />
-
-<form asp-action="AssignCourseToStudentPost" method="post">
-    <input type="hidden" name="StudentID" value="@Model.student.ID" />
-
-    <div class="form-group">
-        <label for="CourseID">Select Course</label>
-        <select id="CourseID" name="CourseID" class="form-control" asp-items="ViewBag.Courses">
-            <option value="">-- Select Course --</option>
-        </select>
-    </div>
-
-    <br />
-    <button type="submit" class="btn btn-primary">Assign</button>
-    <a asp-action="GetAllStudents" class="btn btn-secondary">Cancel</a>
-</form>
 
 @section Scripts {
     @{

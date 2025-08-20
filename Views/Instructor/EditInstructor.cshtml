@@ -1,0 +1,86 @@
+﻿@model universityManagementSys.Models.Instructor
+
+@{
+    ViewData["Title"] = "Edit Instructor";
+}
+
+<div class="container mt-5">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-warning">✏️ Edit Instructor</h1>
+        <p class="text-muted">Update instructor details below.</p>
+        <hr class="w-25 mx-auto" />
+    </div>
+
+    <!-- Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <form asp-action="EditInstructor" method="post">
+                        <input type="hidden" asp-for="ID" />
+
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label asp-for="FirstName" class="form-label fw-semibold"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label asp-for="LastName" class="form-label fw-semibold"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <!-- Hire Date -->
+                        <div class="mb-3">
+                            <label asp-for="HireDate" class="form-label fw-semibold"></label>
+                            <input asp-for="HireDate" type="date" class="form-control" />
+                            <span asp-validation-for="HireDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
+                            <input asp-for="Email" type="email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label asp-for="PhoneNum" class="form-label fw-semibold"></label>
+                            <input asp-for="PhoneNum" class="form-control" />
+                            <span asp-validation-for="PhoneNum" class="text-danger"></span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="GetAllInstructors"
+                               class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                                ⬅️ Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning px-4 rounded-pill shadow-sm">
+                                💾 Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,56 +1,73 @@
-﻿@model universityManagementSys.ModelView.DataViewModel
+﻿@model universityManagementSys.ModelView.dataViewModel
 
 @{
     ViewData["Title"] = Model.PageTitle;
 }
 
-<h2>@Model.PageTitle</h2>
-<p>@Model.WelcomeMessage</p>
-
-<form asp-action="CreateCourse" method="post">
-
-    <div class="form-group">
-        <label asp-for="course.Name" class="control-label"></label>
-        <input asp-for="course.Name" class="form-control" />
-        <span asp-validation-for="course.Name" class="text-danger"></span>
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-success">📘 @Model.PageTitle</h1>
+        <p class="text-muted">@Model.WelcomeMessage</p>
+        <hr class="w-25 mx-auto" />
     </div>
 
-    <div class="form-group">
-        <label asp-for="course.Description" class="control-label"></label>
-        <textarea asp-for="course.Description" class="form-control"></textarea>
-        <span asp-validation-for="course.Description" class="text-danger"></span>
-    </div>
+    <!-- Card -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+            <form asp-action="CreateCourse" method="post">
+                <div class="mb-3">
+                    <label asp-for="course.Name" class="form-label fw-semibold"></label>
+                    <input asp-for="course.Name" class="form-control rounded-pill" placeholder="Enter course name" />
+                    <span asp-validation-for="course.Name" class="text-danger"></span>
+                </div>
 
-    <div class="form-group">
-        <label asp-for="course.CreditHours" class="control-label"></label>
-        <input asp-for="course.CreditHours" class="form-control" type="number" />
-        <span asp-validation-for="course.CreditHours" class="text-danger"></span>
-    </div>
+                <div class="mb-3">
+                    <label asp-for="course.Description" class="form-label fw-semibold"></label>
+                    <textarea asp-for="course.Description" class="form-control rounded-pill" rows="3" placeholder="Enter course description"></textarea>
+                    <span asp-validation-for="course.Description" class="text-danger"></span>
+                </div>
 
-    <div class="form-group">
-        <label asp-for="course.InstructorID">Instructor</label>
-        <select asp-for="course.InstructorID"
-                asp-items="ViewBag.Instructors"
-                class="form-control">
-            <option value="">-- Select Instructor --</option>
-        </select>
-        <span asp-validation-for="course.InstructorID" class="text-danger"></span>
+                <div class="mb-3">
+                    <label asp-for="course.CreditHours" class="form-label fw-semibold"></label>
+                    <input asp-for="course.CreditHours" class="form-control rounded-pill" type="number" placeholder="Enter credit hours" />
+                    <span asp-validation-for="course.CreditHours" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="course.InstructorID" class="form-label fw-semibold">Instructor</label>
+                    <select asp-for="course.InstructorID"
+                            asp-items="ViewBag.Instructors"
+                            class="form-select rounded-pill">
+                        <option value="">-- Select Instructor --</option>
+                    </select>
+                    <span asp-validation-for="course.InstructorID" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="course.SemesterID" class="form-label fw-semibold">Semester</label>
+                    <select asp-for="course.SemesterID"
+                            asp-items="ViewBag.Semester"
+                            class="form-select rounded-pill">
+                        <option value="">-- Select Semester --</option>
+                    </select>
+                    <span asp-validation-for="course.SemesterID" class="text-danger"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="GetAllCourses"
+                       class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                        ⬅️ Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm">
+                        ✅ Add Course
+                    </button>
+                </div>
+            </form>
         </div>
-
-    <div class="form-group">
-        <label asp-for="course.SemesterID">Semester</label>
-        <select asp-for="course.SemesterID"
-                asp-items="ViewBag.Semester"
-                class="form-control">
-            <option value="">-- Select Semester --</option>
-        </select>
-        <span asp-validation-for="course.SemesterID" class="text-danger"></span>
     </div>
-
-    <br />
-    <button type="submit" class="btn btn-primary">Add</button>
-    <a asp-action="GetAllCourses" class="btn btn-secondary">Cancel</a>
-</form>
+</div>
 
 @section Scripts {
     @{

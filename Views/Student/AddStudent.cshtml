@@ -1,56 +1,75 @@
-﻿@model universityManagementSys.ModelView.DataViewModel
+﻿@model universityManagementSys.ModelView.dataViewModel
 
 @{
     ViewData["Title"] = Model.PageTitle;
 }
 
-<h2>@Model.PageTitle</h2>
-<p>@Model.WelcomeMessage</p>
-
-<form asp-action="CreateStudent" method="post">
-    <div class="form-group">
-        <label asp-for="student.FirstName"></label>
-        <input asp-for="student.FirstName" class="form-control" />
-        <span asp-validation-for="student.FirstName" class="text-danger"></span>
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-success">➕ @Model.PageTitle</h1>
+        <p class="text-muted">@Model.WelcomeMessage</p>
+        <hr class="w-25 mx-auto" />
     </div>
 
-    <div class="form-group">
-        <label asp-for="student.LastName"></label>
-        <input asp-for="student.LastName" class="form-control" />
-        <span asp-validation-for="student.LastName" class="text-danger"></span>
+    <!-- Card -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+            <form asp-action="CreateStudent" method="post">
+                <div class="mb-3">
+                    <label asp-for="student.FirstName" class="form-label fw-semibold"></label>
+                    <input asp-for="student.FirstName" class="form-control rounded-pill" />
+                    <span asp-validation-for="student.FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="student.LastName" class="form-label fw-semibold"></label>
+                    <input asp-for="student.LastName" class="form-control rounded-pill" />
+                    <span asp-validation-for="student.LastName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="student.DateOfBirth" class="form-label fw-semibold"></label>
+                    <input asp-for="student.DateOfBirth" type="date" class="form-control rounded-pill" />
+                    <span asp-validation-for="student.DateOfBirth" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="student.Email" class="form-label fw-semibold"></label>
+                    <input asp-for="student.Email" type="email" class="form-control rounded-pill" />
+                    <span asp-validation-for="student.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="student.PhoneNum" class="form-label fw-semibold"></label>
+                    <input asp-for="student.PhoneNum" class="form-control rounded-pill" />
+                    <span asp-validation-for="student.PhoneNum" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="student.DepartmentID" class="form-label fw-semibold">Department</label>
+                    <select asp-for="student.DepartmentID"
+                            asp-items="ViewBag.Departments"
+                            class="form-select rounded-pill">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                    <span asp-validation-for="student.DepartmentID" class="text-danger"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="GetAllStudents"
+                       class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                        ⬅️ Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm">
+                        ✅ Add Student
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="student.DateOfBirth"></label>
-        <input asp-for="student.DateOfBirth" type="date" class="form-control" />
-        <span asp-validation-for="student.DateOfBirth" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="student.Email"></label>
-        <input asp-for="student.Email" type="email" class="form-control" />
-        <span asp-validation-for="student.Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="student.PhoneNum"></label>
-        <input asp-for="student.PhoneNum" class="form-control" />
-        <span asp-validation-for="student.PhoneNum" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="student.DepartmentID">Department</label>
-        <select asp-for="student.DepartmentID"
-                asp-items="ViewBag.Departments"
-                class="form-control">
-            <option value="">-- Select Department --</option>
-        </select>
-        <span asp-validation-for="student.DepartmentID" class="text-danger"></span>
-    </div>
-
-
-    <button type="submit" class="btn btn-primary">Add Student</button>
-</form>
+</div>
 
 @section Scripts {
     @{

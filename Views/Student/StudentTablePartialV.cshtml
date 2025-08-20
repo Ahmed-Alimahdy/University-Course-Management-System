@@ -1,32 +1,39 @@
 ﻿@model IEnumerable<universityManagementSys.Models.Student>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var student in Model)
-            {
-                <tr>
-                    <td>@student.FirstName</td>
-                    <td>@student.LastName</td>
-                    <td>@student.Email</td>
-                    <td>@student.PhoneNum</td>
-                </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="4" class="text-danger">No students found for this course.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@if (Model != null && Model.Any())
+{
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-light fw-semibold">
+            📋 Enrolled Students
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model)
+                    {
+                        <tr>
+                            <td>@student.FirstName</td>
+                            <td>@student.LastName</td>
+                            <td>@student.Email</td>
+                            <td>@student.PhoneNum</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning shadow-sm">
+        🚫 No students found for this course.
+    </div>
+}

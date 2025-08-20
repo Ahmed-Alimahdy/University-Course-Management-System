@@ -16,10 +16,17 @@ namespace universityManagementSys.Repositories.Implementations
         public async Task<IEnumerable<DepartmentCourse>> GetAllAsync()
         {
             return await _context.departmentCourses.ToListAsync();
-
-
         }
 
-       
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddAsync(DepartmentCourse dept)
+        {
+            _context.departmentCourses.Add(dept);
+            await SaveAsync();
+        }
     }
 }

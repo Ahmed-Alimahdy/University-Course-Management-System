@@ -33,16 +33,16 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoSearch()
         {
             ViewBag.functionName = "GetStudentByID";
-            DataViewModel modelView = new DataViewModel
+            dataViewModel modelView = new dataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
             };
             return View("GetStudentIdtoSearch", modelView);
         }
-        public IActionResult GetStudentByID(int id)
+        public async Task<IActionResult> GetStudentByID(int id)
         {
-            var student = _studentRepository.GetByIdAsync(id);
+            var student = await _studentRepository.GetByIdAsync(id);
             if (student == null)
             {
                 TempData["Error"] = "No student found with this ID.";
@@ -53,36 +53,44 @@ namespace universityManagementSys.Controllers
         public IActionResult GetIdtoAssign()
         {
             ViewBag.functionName = "AssignCourseToStudent";
-            DataViewModel modelView = new DataViewModel
+            dataViewModel modelView = new dataViewModel
             {
                 PageTitle = "Search Student",
                 WelcomeMessage = "Welcome to the search Student Page",
             };
             return View("GetStudentIdtoSearch", modelView);
         }
+
         public IActionResult AssignCourseToStudent(int id)
         {
             var student = _studentRepository.GetByIdForAssignCourseAsync(id).Result;
             if (student == null)
             {
-                return NotFound();
+                TempData["Error"] = "Student not found!";
+                return RedirectToAction("GetAllStudents"); // Redirect instead of showing NotFound page
             }
+
             if (HttpContext.Items.ContainsKey("ErrorMessage"))
             {
                 TempData["Error"] = HttpContext.Items["ErrorMessage"];
             }
+
             var courses = _courseRepository.GetCoursesForDropDownLists().Result;
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
-            var model = new DataViewModel
+
+            var model = new dataViewModel
             {
                 PageTitle = "Assign Course to Student",
                 WelcomeMessage = "Please select a course to assign to the student.",
                 student = student
             };
+
             return View("AssignCourse", model);
         }
+
+
         [ServiceFilter(typeof(DbExceptionFilter))]
-        public IActionResult AssignCourseToStudentPost(int StudentID, int CourseID)
+        public async Task<IActionResult> AssignCourseToStudentPost(int StudentID, int CourseID)
         {
             var enrollment = new Enrollment
             {
@@ -90,23 +98,24 @@ namespace universityManagementSys.Controllers
                 CourseID = CourseID
             };
 
-            _enrollmentRepository.AddAsync(enrollment);
+            await _enrollmentRepository.AddAsync(enrollment);
    
-            _enrollmentRepository.SaveAsync().Wait();
+            await _enrollmentRepository.SaveAsync();
 
             TempData["Success"] = "Course assigned successfully!";
             return RedirectToAction("GetAllStudents");
         }
-        public IActionResult GetCourse()
+
+        public async Task<IActionResult> GetCourse()
         {
-            var courses =  _courseRepository.GetCoursesForDropDownLists().Result;   
+            var courses =  await _courseRepository.GetCoursesForDropDownLists();   
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
             return View("GetStudentByCourseId");
         }
 
         public async Task<IActionResult> GetStudentsByCourseId(int courseId)
         {
-            var students = _studentRepository.GetStudentByCourseIdAsync(courseId).Result;
+            var students = await _studentRepository.GetStudentByCourseIdAsync(courseId);
 
             return PartialView("StudentTablePartialV", students);
         }
@@ -136,7 +145,7 @@ namespace universityManagementSys.Controllers
 
             ViewBag.Departments = new SelectList(departments, "ID", "Name");
 
-            var model = new DataViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Create Student",
                 WelcomeMessage = "Please fill in the student details.",
@@ -150,12 +159,21 @@ namespace universityManagementSys.Controllers
         [ValidateAntiForgeryToken] //Security measure to prevent CSRF attacks
         public async Task<IActionResult> CreateStudent(Student student)
         {
-            if (ModelState.IsValid)
-            {
-                await _studentRepository.AddAsync(student);
-                await _studentRepository.SaveAsync();
+            await _studentRepository.AddAsync(student);
+            await _studentRepository.SaveAsync();
 
-                TempData["Success"] = "Student added successfully!";
+            TempData["Success"] = "Student added successfully!";
+            return RedirectToAction("GetAllStudents");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var student = await _studentRepository.GetByIdAsync(id);
+
+            if (student == null)
+            {
+                TempData["Error"] = "Student not found!";
                 return RedirectToAction("GetAllStudents");
             }
 
@@ -163,30 +181,9 @@ namespace universityManagementSys.Controllers
                 .Select(d => new { d.ID, d.Name })
                 .ToList();
 
-            ViewBag.Departments = new SelectList(departments, "ID", "Name");
+            ViewBag.Departments = new SelectList(departments, "ID", "Name", student.DepartmentID);
 
-            var model = new DataViewModel
-            {
-                PageTitle = "Create Student",
-                WelcomeMessage = "Please fill in the student details.",
-                student = student
-            };
-
-            TempData["Error"] = "Student data is not valid";
-            return View("AddStudent", model);
-        }
-
-        public IActionResult Edit(int id)
-        {
-            var student = _studentRepository.GetByIdAsync(id).Result;
-
-            var departments = _departmentRepository.GetAllAsync().Result
-                .Select(d => new { d.ID, d.Name })
-                .ToList();
-
-            ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
-
-            var model = new DataViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Edit Student",
                 WelcomeMessage = "Please update the student details.",
@@ -196,17 +193,21 @@ namespace universityManagementSys.Controllers
             return View("EditStudent", model);
         }
 
-        public IActionResult EditStudent(Student student)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Student student)
         {
-            if (student == null || !ModelState.IsValid)
+            if (student == null)
             {
                 TempData["Error"] = "Invalid student data.";
-                var departments = _departmentRepository.GetAllAsync().Result
+
+                var departments = (await _departmentRepository.GetAllAsync())
                     .Select(d => new { d.ID, d.Name })
                     .ToList();
+
                 ViewBag.Departments = new SelectList(departments, "ID", "Name", student?.DepartmentID);
 
-                var model = new DataViewModel
+                var model = new dataViewModel
                 {
                     PageTitle = "Edit Student",
                     WelcomeMessage = "Please update the student details.",
@@ -214,13 +215,15 @@ namespace universityManagementSys.Controllers
                 };
 
                 return View("EditStudent", model);
-
             }
-            _studentRepository.UpdateAsync(student).Wait();
-            _studentRepository.SaveAsync().Wait();
+
+            await _studentRepository.UpdateAsync(student);
+            await _studentRepository.SaveAsync();
+
             TempData["Success"] = "Student updated successfully!";
             return RedirectToAction("GetAllStudents");
         }
+
 
         public IActionResult Delete(int id)
         {
