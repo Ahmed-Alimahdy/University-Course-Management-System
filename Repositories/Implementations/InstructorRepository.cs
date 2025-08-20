@@ -19,6 +19,12 @@ namespace universityManagementSys.Repositories.Implementations
             _context.instructors.Add(instructor);
             await SaveAsync();
         }
+        public async Task<Instructor?> GetByEmailAsync(string email)
+        {
+            return await _context.instructors
+                    .Include(e => e.Courses)
+                .FirstOrDefaultAsync(s => s.Email == email);
+        }
 
         public async Task<bool> DeleteAsync(int id)
         {
@@ -81,5 +87,7 @@ namespace universityManagementSys.Repositories.Implementations
 
             return true;
         }
+
+       
     }
 }

@@ -65,7 +65,11 @@ namespace universityManagementSys.Repositories.Implementations
 
         public async Task<Student?> GetByEmailAsync(string email)
         {
-            return await _context.students.FirstOrDefaultAsync(s => s.Email.Equals(email));
+            return await _context.students
+                .Include(s => s.Department)   
+                .Include(s => s.Enrollments)
+                    .ThenInclude(e => e.Course)  
+                .FirstOrDefaultAsync(s => s.Email == email);
         }
 
         public async Task SaveAsync()

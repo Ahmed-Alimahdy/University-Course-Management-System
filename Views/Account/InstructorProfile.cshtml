@@ -1,0 +1,15 @@
+﻿@model universityManagementSys.Models.Instructor
+
+<div class="card p-3 shadow-sm">
+    <h4>Instructor Info</h4>
+    <p><strong>ID:</strong> @Model.ID</p>
+    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Phone:</strong> @Model.PhoneNum</p>
+    <p><strong>Hire Date:</strong> @Model.HireDate.ToShortDateString()</p>
+    <p><strong>Title:</strong> @Model.Title</p>
+</div>
+
+<br />
+
+<a asp-action="Edit" asp-route-id="@Model.ID" class="btn btn-primary">Edit Profile</a>

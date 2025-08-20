@@ -59,23 +59,14 @@ namespace universityManagementSys.Controllers
 
             return View("AddInstructor", model);
         }
-        public IActionResult CreateInstructor(Instructor instructor)
+        public async Task<IActionResult> CreateInstructor(Instructor instructor)
         {
-            if (ModelState.IsValid)
-            {
-                _instructorRepository.AddAsync(instructor).Wait();
-                _instructorRepository.SaveAsync().Wait();
+            
+                await _instructorRepository.AddAsync(instructor);
+                await _instructorRepository.SaveAsync();
                 TempData["Success"] = "instructor added successfully!";
                 return RedirectToAction("GetAllInstructors");
-            }
-            var model = new DataViewModel
-            {
-                PageTitle = "Add instructor",
-                WelcomeMessage = "Please fill in the instructor details.",
-                instructor = instructor
-            };
-
-            return View("AddInstructor", instructor);
+           
         }
         public IActionResult Edit(int id)
         {

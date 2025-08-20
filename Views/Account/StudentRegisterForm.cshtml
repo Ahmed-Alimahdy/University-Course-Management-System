@@ -1,0 +1,25 @@
+﻿@model universityManagementSys.ViewModel.RegisterViewModel
+
+
+<form>
+    <input type="hidden" asp-for="Role" value="Student" />
+    
+
+    <div class="form-group">
+        <label asp-for="student.DateOfBirth"></label>
+        <input asp-for="student.DateOfBirth" type="date" class="form-control" />
+        <span asp-validation-for="student.DateOfBirth" class="text-danger"></span>
+    </div>
+
+    
+
+    <div class="form-group">
+        <label asp-for="student.DepartmentID">Department</label>
+        <select asp-for="student.DepartmentID"
+                asp-items="ViewBag.Departments"
+                class="form-control">
+            <option value="">-- Select Department --</option>
+        </select>
+        <span asp-validation-for="student.DepartmentID" class="text-danger"></span>
+    </div>
+</form>

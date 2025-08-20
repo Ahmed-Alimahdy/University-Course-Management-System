@@ -1,0 +1,39 @@
+﻿@model universityManagementSys.Models.Student
+
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="card p-3 shadow-sm">
+    <h4>Student Info</h4>
+    <p><strong>ID:</strong> @Model.ID</p>
+    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+</div>
+
+<br />
+
+<form asp-action="AssignCourseToStudentPost" method="post">
+    <input type="hidden" name="StudentID" value="@Model.ID" />
+
+    <div class="form-group">
+        <label for="CourseID">Select Course</label>
+        <select id="CourseID" name="CourseID" class="form-control" asp-items="ViewBag.Courses">
+            <option value="">-- Select Course --</option>
+        </select>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Assign</button>
+    <a asp-action="GetStudentProfile" asp-controller="account" asp-route-student="@Model.ID" class="btn btn-secondary">Cancel</a>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

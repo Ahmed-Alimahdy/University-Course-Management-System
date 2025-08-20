@@ -35,18 +35,9 @@ namespace universityManagementSys.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddSemester(Semester semester)
         {
-            if (ModelState.IsValid)
-            {
-                _semesterRepository.AddAsync(semester).Wait();
-                _semesterRepository.SaveAsync().Wait();
-                return RedirectToAction("GetAllSemesters");
-            }
-            else
-            {
-                ViewBag.PageTitle = "Add Semester";
-                ViewBag.WelcomeMessage = "Welcome to the semester add Page";
-                return View("AddSemester",semester);
-            }
+           _semesterRepository.AddAsync(semester).Wait();
+           _semesterRepository.SaveAsync().Wait();
+           return RedirectToAction("GetAllSemesters");
         }
         public IActionResult GetSemesterByID(int id)
         {

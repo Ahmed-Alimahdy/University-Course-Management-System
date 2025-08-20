@@ -1,9 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using universityManagementSys.Models;
 
 namespace universityManagementSys.ViewModel
 {
     public class RegisterViewModel
     {
+        [Required]
+        [Display(Name = "FirstName")]
+        public string Firstname { get; set; }
+        [Required]
+        [Display(Name = "LastName")]
+        public string LastName { get; set; }
         [Required]
         [Display(Name = "Username")]
         public string UserName { get; set; }
@@ -28,6 +35,8 @@ namespace universityManagementSys.ViewModel
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; } // Will be "Student" or "Instructor"
+        public Student student { get; set; }
+        public Instructor instructor { get; set; }
     }
 
 }

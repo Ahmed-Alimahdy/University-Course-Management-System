@@ -128,53 +128,16 @@ namespace universityManagementSys.Controllers
 
         public IActionResult CreateCourse(Course course)
         {
-            if (ModelState.IsValid)
-            {
+          
                 _courseRepository.AddAsync(course).Wait();
                 _courseRepository.SaveAsync().Wait();
                 TempData["Success"] = "Course added successfully!";
                 return RedirectToAction("GetAllCourses");
-            }
-            else
-            {
-                var instructors = _instructorRepository.GetAllAsync().Result
-                 .Select(d => new { d.ID, d.FirstName, d.LastName })
-                 .ToList();
-
-                var semesters = _semesterRepository.GetAllAsync().Result
-                     .Select(d => new { d.ID, d.Name })
-                     .ToList();
-
-                ViewBag.Instructors = new SelectList(
-             instructors.Select(i => new {
-                 i.ID,
-                 FullName = i.FirstName + " " + i.LastName
-             }),
-             "ID",
-             "FullName"
-         );
-
-                ViewBag.Semester = new SelectList(semesters, "ID", "Name");
-
-
-                DataViewModel viewModel = new DataViewModel
-                {
-                    PageTitle = "Add Course",
-                    WelcomeMessage = "Please fill in the course details.",
-                    course = new Course()
-                };
-                TempData["Error"] = "Invalid Data";
-                return View("AddCourse", viewModel);
-
-            }
         }
         public IActionResult Edit(int id)
         {
             var course = _courseRepository.GetByIdAsync(id).Result;
-            if (course == null)
-            {
-                return NotFound();
-            }
+          
             return View();
         }
         public IActionResult EditCourse(Course course)
