@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using universityManagementSys.Models;
+using universityManagementSys.ModelView;
 using universityManagementSys.Repositories.Implementations;
 using universityManagementSys.Repositories.Interfaces;
 using universityManagementSys.ViewModel;
@@ -14,79 +16,223 @@ namespace universityManagementSys.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IStudentRepository studentRepository;
+        private readonly IDepartmentRepository departmentRepository;
         private readonly IInstructorRepository instructorRepository;
+        private readonly IEnrollmentRepository _enrollmentRepository;
+        private readonly ICourseRepository courseRepository;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IStudentRepository studentRepository,IInstructorRepository instructorRepository)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager, IStudentRepository studentRepository,IInstructorRepository instructorRepository, IDepartmentRepository departmentRepository,IEnrollmentRepository enrollmentRepository,ICourseRepository courseRepository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
+            this.courseRepository = courseRepository;
             this.studentRepository = studentRepository;
             this.instructorRepository = instructorRepository;
+            this.departmentRepository = departmentRepository;
+            this._enrollmentRepository = enrollmentRepository;
         }
 
 
         //Register
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View("Register");
-        }
+       
 
         [Authorize(Roles = "Admin")]
         public IActionResult AdminDashBoard()
         {
             return View("AdminDashBoard");
         }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View("Register");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Register(RegisterViewModel newUser)
         {
-            if (ModelState.IsValid)
+            
+            var user = new ApplicationUser
             {
-                ApplicationUser user = new ApplicationUser
-                {
-                    UserName = newUser.UserName,
-                    Email = newUser.Email,
-                    PhoneNumber = newUser.PhoneNumber
-                };
+                UserName = newUser.UserName,
+                Email = newUser.Email,
+                PhoneNumber = newUser.PhoneNumber
+            };
 
-                IdentityResult result = await userManager.CreateAsync(user, newUser.Password);
+            var result = await userManager.CreateAsync(user, newUser.Password);
 
-                if (result.Succeeded)
-                {
-                    // Add selected role (Student or Instructor)
-                    if (await roleManager.RoleExistsAsync(newUser.Role))
-                    {
-                        await userManager.AddToRoleAsync(user, newUser.Role);
-                    }
-
-                    await signInManager.SignInAsync(user, false);
-
-                    if (newUser.Role == "Admin")
-                        return RedirectToAction("AdminDashBoard");
-                    if (newUser.Role == "Student")
-                    {
-                        studentRepository.AddAsync(new Student { FirstName = newUser.UserName ,LastName = "",Email = newUser.Email ,PhoneNum = newUser.PhoneNumber ,DepartmentID =1}).Wait();
-                    }
-                    if(newUser.Role == "Instructor")
-                    {
-                        instructorRepository.AddAsync(new Instructor {FirstName = newUser.UserName, Email= newUser.Email , LastName = "" , Title ="", PhoneNum =newUser.PhoneNumber  }).Wait();
-                    }
-
-                    return RedirectToAction("Index", "Home"); // or your default page
-                }
-
+            
+            if (!result.Succeeded)
+            {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+                return View("Register", newUser);
             }
-            return View("Register", newUser);
+
+          
+            if (await roleManager.RoleExistsAsync(newUser.Role))
+            {
+                await userManager.AddToRoleAsync(user, newUser.Role);
+            }
+
+
+            if (newUser.Role == "Student" && newUser.student != null)
+            {
+                var student = new Student
+                {
+                    FirstName = newUser.Firstname,
+                    LastName = newUser.LastName,
+                    Email = newUser.Email,
+                    DateOfBirth = newUser.student.DateOfBirth,
+                    PhoneNum = newUser.PhoneNumber,
+                    DepartmentID = newUser.student.DepartmentID
+                };
+
+                await studentRepository.AddAsync(student);
+
+                
+                var savedStudent = await studentRepository.GetByEmailAsync(newUser.Email);
+
+                return View("StudentProfile", savedStudent);
+            }
+
+            else if (newUser.Role == "Instructor" && newUser.instructor != null)
+            {
+                var instructor = new Instructor
+                {
+                    FirstName = newUser.Firstname,
+                    LastName = newUser.LastName,
+                    Email = newUser.Email,
+                    HireDate = newUser.instructor.HireDate,
+                    Title = newUser.instructor.Title,
+                    PhoneNum = newUser.PhoneNumber
+                };
+                await instructorRepository.AddAsync(instructor);
+                var savedInstructor = await instructorRepository.GetByEmailAsync(newUser.Email);
+                return View("InstructorProfile", instructor);
+            }
+
+          
+            if (newUser.Role == "Admin")
+            {
+                return RedirectToAction("AdminDashBoard");
+            }
+
+           
+            TempData["Success"] = "Account created successfully. Please login.";
+            return RedirectToAction("Login");
+        }
+        public async Task<IActionResult> GetStudentForm() { var departments = await departmentRepository.GetAllAsync(); ViewBag.Departments = new SelectList(departments, "ID", "Name"); return PartialView("StudentRegisterForm", new RegisterViewModel { student = new Student(), Role = "Student" }); }
+        public async Task<IActionResult> GetStudentProfile(int id)
+        {
+            var student = await studentRepository.GetByIdAsync(id);
+           
+            return View("StudentProfile", student);
+        }
+
+       
+        public async Task<IActionResult> EditProfile(int id)
+        {
+            var student = await studentRepository.GetByIdAsync(id);
+           
+
+            
+            ViewBag.Departments = new SelectList(await departmentRepository.GetAllAsync(), "ID", "Name");
+
+            return View("EditStudentByProfile", student);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(Student student)
+        {
+       
+
+            await studentRepository.UpdateAsync(student);
+
+            return RedirectToAction("StudentProfile", new { id = student.ID });
         }
 
 
+        public async Task<IActionResult> AssignCourseToStudentProfile(int id)
+        {
+            var student = studentRepository.GetByIdForAssignCourseAsync(id).Result;
+            if (student == null)
+            {
+                return NotFound();
+            }
+            if (HttpContext.Items.ContainsKey("ErrorMessage"))
+            {
+                TempData["Error"] = HttpContext.Items["ErrorMessage"];
+            }
+            var courses = courseRepository.GetCoursesForDropDownLists().Result;
+            ViewBag.Courses = new SelectList(courses, "ID", "Name");
+          
+            return View("AssignCourseByProfile", student);
+        }
+        public IActionResult AssignCourseToStudentPost(int StudentID, int CourseID)
+        {
+            var enrollment = new Enrollment
+            {
+                StudentID = StudentID,
+                CourseID = CourseID
+            };
+
+            _enrollmentRepository.AddAsync(enrollment);
+
+            _enrollmentRepository.SaveAsync().Wait();
+
+            TempData["Success"] = "Course assigned successfully!";
+            return RedirectToAction("GetAllStudents");
+        }
+        public async Task<IActionResult> EditStudent(Student student)
+        {
+
+            await studentRepository.UpdateAsync(student);
+            await studentRepository.SaveAsync();
+            TempData["Success"] = "Student updated successfully!";
+            return RedirectToAction("GetAllStudents",student);
+        }
+        public async Task<IActionResult> GetInstructorForm() { return PartialView("InstructorRegisterForm", new RegisterViewModel { instructor = new Instructor(), Role = "Instructor" });
+        }
+        public async Task<IActionResult> GetInstructorProfile(int id)
+        {
+            var instructor = await instructorRepository.GetByIdAsync(id);
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+            return View("InstructorProfile", instructor);
+        }
+
+        // GET Edit
+        public async Task<IActionResult> Edit(int id)
+        {
+            var instructor = await instructorRepository.GetByIdAsync(id);
+            if (instructor == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Departments = new SelectList(await departmentRepository.GetAllAsync(), "ID", "Name");
+            return View("EditInstructorByProfile", instructor);
+        }
+
+        // POST Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditInstructor(Instructor instructor)
+        {
+          
+
+            await instructorRepository.UpdateAsync(instructor);
+
+            return RedirectToAction("GetInstructorProfile", new { id = instructor.ID });
+        }
         [HttpGet]
 
         //Login
