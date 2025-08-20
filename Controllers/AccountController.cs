@@ -51,7 +51,6 @@ namespace universityManagementSys.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Register(RegisterViewModel newUser)
         {
             
@@ -165,6 +164,12 @@ namespace universityManagementSys.Controllers
             
             ViewBag.Departments = new SelectList(await departmentRepository.GetAllAsync(), "ID", "Name");
 
+            return View("EditStudentByProfile", student);
+        }
+        public async Task<IActionResult> EditProfile(int id)
+        { 
+            var student = await studentRepository.GetByIdAsync(id);
+            ViewBag.Departments = new SelectList(await departmentRepository.GetAllAsync(), "ID", "Name");
             return View("EditStudentByProfile", student);
         }
 
@@ -308,7 +313,7 @@ namespace universityManagementSys.Controllers
                             }
                         }
 
-      return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Home");
                     }
 
                     ModelState.AddModelError("Password", "Password is incorrect.");
