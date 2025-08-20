@@ -259,6 +259,7 @@ namespace universityManagementSys.Controllers
 
             return RedirectToAction("GetInstructorProfile", new { id = instructor.ID });
         }
+
         [HttpGet]
 
         //Login
