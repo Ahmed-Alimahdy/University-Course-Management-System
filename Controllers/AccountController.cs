@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
 using universityManagementSys.Repositories.Implementations;
@@ -179,8 +180,10 @@ namespace universityManagementSys.Controllers
 
         public IActionResult AssignCourseToStudent(int id)
         {
+
             var student = studentRepository.GetByIdForAssignCourseAsync(id).Result;
            
+
 
             if (HttpContext.Items.ContainsKey("ErrorMessage"))
             {
@@ -201,7 +204,9 @@ namespace universityManagementSys.Controllers
         }
 
 
+
         [ServiceFilter(typeof(DbExceptionFilter))]
+
         public async Task<IActionResult> AssignCourseToStudentPost(int StudentID, int CourseID)
         {
             var enrollment = new Enrollment
@@ -211,10 +216,12 @@ namespace universityManagementSys.Controllers
             };
 
             await _enrollmentRepository.AddAsync(enrollment);
+
             await _enrollmentRepository.SaveAsync();
 
             TempData["Success"] = "Course assigned successfully!";
             return RedirectToAction("GetStudentProfile", new { id = StudentID });
+
         }
 
 
@@ -248,8 +255,6 @@ namespace universityManagementSys.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditInstructor(Instructor instructor)
         {
-          
-
             await instructorRepository.UpdateAsync(instructor);
 
             return RedirectToAction("GetInstructorProfile", new { id = instructor.ID });
@@ -277,7 +282,7 @@ namespace universityManagementSys.Controllers
                     {
                         await signInManager.SignInAsync(user, newUser.RememberMe);
 
-                        
+
                         var roles = await userManager.GetRolesAsync(user);
 
                         if (roles.Contains("Admin"))
@@ -303,8 +308,7 @@ namespace universityManagementSys.Controllers
                             }
                         }
 
-                        
-                        return RedirectToAction("Index", "Home");
+      return RedirectToAction("Index", "Home");
                     }
 
                     ModelState.AddModelError("Password", "Password is incorrect.");
