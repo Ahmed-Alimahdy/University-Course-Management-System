@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using universityManagementSys.Models;
-using universityManagementSys.ModelView;
-using universityManagementSys.Repositories.Implementations;
 using universityManagementSys.Repositories.Interfaces;
 using universityManagementSys.ViewModel;
 
@@ -121,8 +119,15 @@ namespace universityManagementSys.Controllers
             {
                 return RedirectToAction("AdminDashBoard");
             }
+            if (newUser.Role =="Student")
+            {
+                return RedirectToAction("GetStudentProfile",newUser.student?.ID);
+            }
+            if(newUser.Role =="Instructor")
+            {
+                return RedirectToAction("GetInstructionProfile", newUser.instructor?.ID);
+            }
 
-           
             TempData["Success"] = "Account created successfully. Please login.";
             return RedirectToAction("Login");
         }
@@ -130,12 +135,12 @@ namespace universityManagementSys.Controllers
         public async Task<IActionResult> GetStudentProfile(int id)
         {
             var student = await studentRepository.GetByIdAsync(id);
-           
-            return View("StudentProfile", student);
+
+            return RedirectToAction("GetStudentProfile", new { id = student.ID });
         }
 
        
-        public async Task<IActionResult> EditProfile(int id)
+        public async Task<IActionResult> GetIDProfile(int id)
         {
             var student = await studentRepository.GetByIdAsync(id);
            
@@ -187,16 +192,9 @@ namespace universityManagementSys.Controllers
             _enrollmentRepository.SaveAsync().Wait();
 
             TempData["Success"] = "Course assigned successfully!";
-            return RedirectToAction("GetAllStudents");
+            return RedirectToAction("GetStudentProfile");
         }
-        public async Task<IActionResult> EditStudent(Student student)
-        {
-
-            await studentRepository.UpdateAsync(student);
-            await studentRepository.SaveAsync();
-            TempData["Success"] = "Student updated successfully!";
-            return RedirectToAction("GetAllStudents",student);
-        }
+       
         public async Task<IActionResult> GetInstructorForm() { return PartialView("InstructorRegisterForm", new RegisterViewModel { instructor = new Instructor(), Role = "Instructor" });
         }
         public async Task<IActionResult> GetInstructorProfile(int id)
