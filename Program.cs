@@ -38,12 +38,7 @@ namespace universityManagementSys
                     });
             });
 
-
-
-
-
             // Add services to the container.
-
 
             IServiceCollection serviceCollection = builder.Services.AddDbContext<Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -88,9 +83,9 @@ namespace universityManagementSys
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.SlidingExpiration = true;
             });
-                builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<Context>()
-    .AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<Context>()
+                .AddDefaultTokenProviders();
 
 
             var app = builder.Build();

@@ -18,7 +18,7 @@ namespace universityManagementSys.Controllers
 
         public IActionResult Index()
         {
-                return RedirectToAction("Login", "Account");
+            return View();
         }
 
         public IActionResult Privacy()

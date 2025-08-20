@@ -1,18 +1,30 @@
 ﻿@model universityManagementSys.Models.Student
 
-<div class="card mt-4">
-    <div class="card-body">
-        <h4>Assign New Course</h4>
+@{
+    ViewData["Title"] = "Assign Course";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 rounded-3">
+        <h2 class="text-center text-primary mb-4">📘 Assign New Course</h2>
+        <hr />
 
         <form asp-action="AssignCourseToStudentPost" method="post">
             <input type="hidden" name="StudentID" value="@Model.ID" />
 
-            <div class="form-group">
-                <label for="CourseID">Select Course</label>
-                <select name="CourseID" class="form-control" asp-items="ViewBag.Courses"></select>
+            <!-- Course Dropdown -->
+            <div class="form-group mb-3">
+                <label for="CourseID" class="form-label">Select Course</label>
+                <select name="CourseID" class="form-control" asp-items="ViewBag.Courses">
+                    <option value="">-- Select a Course --</option>
+                </select>
             </div>
 
-            <button type="submit" class="btn btn-primary mt-2">Assign Course</button>
+            <!-- Buttons -->
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary rounded-pill px-4">✅ Assign</button>
+                <a asp-action="GetStudentProfile" asp-route-id="@Model.ID" class="btn btn-secondary rounded-pill px-4">❌ Cancel</a>
+            </div>
         </form>
     </div>
 </div>
