@@ -1,0 +1,88 @@
+﻿@model universityManagementSys.Models.Course
+
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<div class="container mt-5">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">✏️ Edit Course</h1>
+        <p class="text-muted">Update the details of this course below</p>
+        <hr class="w-25 mx-auto" />
+    </div>
+
+    <!-- Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <form asp-action="EditCourse" method="post">
+                        <input type="hidden" asp-for="ID" />
+
+                        <!-- Course Name -->
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Name" class="form-control rounded-pill shadow-sm" placeholder="Enter course name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Description" class="form-control rounded-pill shadow-sm" rows="3" placeholder="Enter course description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Credit Hours -->
+                        <div class="mb-3">
+                            <label asp-for="CreditHours" class="form-label fw-semibold"></label>
+                            <input asp-for="CreditHours" class="form-control rounded-pill shadow-sm" type="number" placeholder="Enter credit hours" />
+                            <span asp-validation-for="CreditHours" class="text-danger"></span>
+                        </div>
+
+                        <!-- Instructor -->
+                        <div class="mb-3">
+                            <label asp-for="InstructorID" class="form-label fw-semibold">Instructor</label>
+                            <select asp-for="InstructorID"
+                                    asp-items="ViewBag.Instructors"
+                                    class="form-select rounded-pill shadow-sm">
+                                <option value="">-- Select Instructor --</option>
+                            </select>
+                            <span asp-validation-for="InstructorID" class="text-danger"></span>
+                        </div>
+
+                        <!-- Semester -->
+                        <div class="mb-3">
+                            <label asp-for="SemesterID" class="form-label fw-semibold">Semester</label>
+                            <select asp-for="SemesterID"
+                                    asp-items="ViewBag.Semester"
+                                    class="form-select rounded-pill shadow-sm">
+                                <option value="">-- Select Semester --</option>
+                            </select>
+                            <span asp-validation-for="SemesterID" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="GetAllCourses"
+                               class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                                ⬅️ Cancel
+                            </a>
+                            <button type="submit"
+                                    class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                💾 Update Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,47 +1,88 @@
 ﻿@model List<Instructor>
+
 @{
     ViewData["Title"] = "All Instructors";
 }
-<h2>@ViewData["Title"]</h2>
 
-@if (Model == null || !Model.Any())
-{
-    <div class="alert alert-warning">
-        @ViewBag.NoDataMessage ?? "No Instructors available."
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">👨‍🏫 All Instructors</h1>
+        <p class="text-muted">View, manage, and update instructors here.</p>
+        <hr class="w-25 mx-auto" />
     </div>
-}
-else
-{
-    <table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-			<th>ID</th>
-            <th>FirstName</th>
-            <th>LastName</th>
-			<th>Email</th>
-			<th>PhoneNum</th>
-            <th>HireDate</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var instructor in Model)
-        {
-            <tr>
-				<td>@instructor.ID</td>
-                <td>@instructor.FirstName</td>
-				<td>@instructor.LastName</td>
-				<td>@instructor.Email</td>
-				<td>@instructor.PhoneNum</td>
-				<td>@instructor.HireDate.ToString("yyyy-MM-dd")</td>
-                <td>
-                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@instructor.ID">Edit</a>
-                    <td/>
-                    <td>
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@instructor.ID">Delete</a>
-                </td>
-            </tr>
 
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            @ViewBag.NoDataMessage ?? "No Instructors available."
+        </div>
+    }
+    else
+    {
+        <!-- Instructors Table -->
+        <div class="card shadow-lg border-0">
+            <div class="card-body">
+                <table class="table table-hover table-bordered align-middle text-center">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Hire Date</th>
+                            <th colspan="2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var instructor in Model)
+                        {
+                            <tr>
+                                <td>@instructor.ID</td>
+                                <td>@instructor.FirstName</td>
+                                <td>@instructor.LastName</td>
+                                <td>@instructor.Email</td>
+                                <td>@instructor.PhoneNum</td>
+                                <td>@instructor.HireDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                       asp-action="Edit" asp-route-id="@instructor.ID">
+                                        Edit
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                       asp-action="Delete" asp-route-id="@instructor.ID">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <!-- Buttons Below Table -->
+    <div class="text-center mt-4">
+        <a asp-action="Create" asp-controller="Instructor"
+           class="btn btn-success px-4 py-2 rounded-pill shadow-sm me-3">
+            ➕ Add Instructor
+        </a>
+
+        <a asp-action="AdminDashBoard" asp-controller="Account"
+           class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
+            ⬅️ Back to Dashboard
+        </a>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #f1f7ff;
         }
-    </tbody>
-   </table>
-   }
+    </style>
+}

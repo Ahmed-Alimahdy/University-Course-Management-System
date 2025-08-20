@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using universityManagementSys.Data;
+using System.Threading.Tasks;
 using universityManagementSys.Filters;
 using universityManagementSys.Models;
 using universityManagementSys.ModelView;
@@ -17,15 +17,18 @@ namespace universityManagementSys.Controllers
         IEnrollmentRepository _enrollmentRepository;
         IInstructorRepository _instructorRepository;
         ISemesterRepository _semesterRepository;
+        IDepartmentRepository _departmentRepository;
         IDepartmentCourseRepository _departmentCourseRepository;
-        public CourseController(Context context, ICourseRepository courseRepository, IEnrollmentRepository enrollmentRepository, IInstructorRepository instructorRepository, ISemesterRepository semesterRepository, IDepartmentCourseRepository departmentCourseRepository)
+        public CourseController(ICourseRepository courseRepository, IEnrollmentRepository enrollmentRepository, 
+            IInstructorRepository instructorRepository, ISemesterRepository semesterRepository, 
+            IDepartmentCourseRepository departmentCourseRepository, IDepartmentRepository departmentRepository)
         {
-
             _courseRepository = courseRepository;
             _instructorRepository = instructorRepository;
             _semesterRepository = semesterRepository;
             _enrollmentRepository = enrollmentRepository;
             _departmentCourseRepository = departmentCourseRepository;
+            _departmentRepository = departmentRepository;
         }
         public IActionResult GetAllCourses()
         {
@@ -103,18 +106,17 @@ namespace universityManagementSys.Controllers
                  .ToList();
 
             ViewBag.Instructors = new SelectList(
-         instructors.Select(i => new {
-             i.ID,
-             FullName = i.FirstName + " " + i.LastName
-         }),
-         "ID",
-         "FullName"
-     );
+                 instructors.Select(i => new {
+                     i.ID,
+                     FullName = i.FirstName + " " + i.LastName
+                 }),
+                 "ID",
+                 "FullName"
+            );
 
             ViewBag.Semester = new SelectList(semesters, "ID", "Name");
 
-
-            DataViewModel viewModel = new DataViewModel
+            dataViewModel viewModel = new dataViewModel
             {
                 PageTitle = "Add Course",
                 WelcomeMessage = "Please fill in the course details.",
@@ -123,57 +125,67 @@ namespace universityManagementSys.Controllers
             return View("AddCourse", viewModel);
         }
 
-
-
-
         public IActionResult CreateCourse(Course course)
         {
-          
-                _courseRepository.AddAsync(course).Wait();
-                _courseRepository.SaveAsync().Wait();
-                TempData["Success"] = "Course added successfully!";
-                return RedirectToAction("GetAllCourses");
+
+            _courseRepository.AddAsync(course).Wait();
+            _courseRepository.SaveAsync().Wait();
+            TempData["Success"] = "Course added successfully!";
+            return RedirectToAction("GetAllCourses");
         }
-        public IActionResult Edit(int id)
+
+        public async Task<IActionResult> Edit(int id)
         {
-            var course = _courseRepository.GetByIdAsync(id).Result;
-          
-            return View();
-        }
-        public IActionResult EditCourse(Course course)
-        {
-            if (ModelState.IsValid)
-            {
-                _courseRepository.UpdateAsync(course).Wait();
-                _courseRepository.SaveAsync().Wait();
-                TempData["Success"] = "Course updated successfully!";
-                return RedirectToAction("GetAllCourses");
-            }
-            else
-            {
-                TempData["Error"] = "Invalid Data";
-                return View();
-            }
-        }
-        public IActionResult Delete(int id)
-        {
-            var course = _courseRepository.GetByIdAsync(id).Result;
+            var instructors = await _instructorRepository.GetAllAsync();
+            instructors.Select(d => new { d.ID, d.FirstName, d.LastName }).ToList();
+
+            var semesters = await _semesterRepository.GetAllAsync();
+            semesters.Select(d => new { d.ID, d.Name }).ToList();
+
+            ViewBag.Instructors = new SelectList(
+                 instructors.Select(i => new {
+                     i.ID,
+                     FullName = i.FirstName + " " + i.LastName
+                 }),
+                 "ID",
+                 "FullName"
+            );
+
+            ViewBag.Semester = new SelectList(semesters, "ID", "Name");
+
+            var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
             {
                 return NotFound();
             }
-            return View(course);
+            return View("EditCourse", course);
         }
-        public IActionResult DeleteCourseConfirmed(int id)
+        public async Task<IActionResult> EditCourse(Course course)
         {
-            var course = _courseRepository.GetByIdAsync(id).Result;
+            await _courseRepository.UpdateAsync(course);
+            await _courseRepository.SaveAsync();
+            TempData["Success"] = "Course updated successfully!";
+            return RedirectToAction("GetAllCourses");
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var course = await _courseRepository.GetByIdAsync(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return View("DeleteCourse", course);
+        }
+        public async Task<IActionResult> DeleteCourseConfirmed(int id)
+        {
+            var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
             {
                 return NotFound();
             }
 
-            _courseRepository.DeleteAsync(id).Wait();
-            _courseRepository.SaveAsync().Wait();
+            await _courseRepository.DeleteAsync(id);
+            await _courseRepository.SaveAsync();
             TempData["Success"] = "Courses deleted successfully!";
             return RedirectToAction("GetAllCourses");
         }

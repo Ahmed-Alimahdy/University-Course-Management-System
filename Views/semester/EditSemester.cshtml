@@ -1,57 +1,55 @@
-﻿@model universityManagementSys.Models.Department
+﻿@model universityManagementSys.Models.Semester
 
 @{
-    ViewData["Title"] = "Add Department";
+    ViewData["Title"] = "Edit Semester";
 }
 
 <div class="container mt-5">
     <!-- Header -->
     <div class="text-center mb-4">
-        <h1 class="fw-bold text-success">➕ Add Department</h1>
-        <p class="text-muted">Fill out the form below to add a new department.</p>
+        <h1 class="fw-bold text-primary">✏️ Edit Semester</h1>
+        <p class="text-muted">Update the semester details below.</p>
         <hr class="w-25 mx-auto" />
     </div>
-
-    <!-- Success Message -->
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success text-center shadow-sm rounded-pill">
-            @TempData["Success"]
-        </div>
-    }
 
     <!-- Card -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-lg border-0 rounded-3">
                 <div class="card-body p-4">
-                    <form asp-action="CreateDepartment" method="post">
+                    <form asp-action="EditSemester" method="post">
+                        <input type="hidden" asp-for="ID" />
 
-                        <!-- Department Name -->
+                        <!-- Name -->
                         <div class="mb-3">
                             <label asp-for="Name" class="form-label fw-semibold"></label>
                             <input asp-for="Name" class="form-control rounded-pill shadow-sm" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
-                        <!-- Department Description -->
+                        <!-- Start Date -->
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label fw-semibold"></label>
-                            <textarea asp-for="Description"
-                                      class="form-control shadow-sm rounded-3"
-                                      rows="3"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                            <input asp-for="StartDate" type="date" class="form-control rounded-pill shadow-sm" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="mb-3">
+                            <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                            <input asp-for="EndDate" type="date" class="form-control rounded-pill shadow-sm" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
                         </div>
 
                         <!-- Buttons -->
                         <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="GetAllDepartments"
+                            <a asp-action="GetAllSemesters"
                                class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
                                 ⬅️ Cancel
                             </a>
                             <button type="submit"
-                                    class="btn btn-success px-4 rounded-pill shadow-sm">
-                                ✅ Create Department
+                                    class="btn btn-primary px-4 rounded-pill shadow-sm">
+                                💾 Update Semester
                             </button>
                         </div>
                     </form>

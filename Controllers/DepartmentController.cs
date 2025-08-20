@@ -20,15 +20,13 @@ namespace universityManagementSys.wwwroot
             _departmentCourseRepository = departmentCourseRepository;
             _studentRepository = studentRepository;
         }
-        public IActionResult GetAllDepartments()
+        public async Task<IActionResult> GetAllDepartments()
         {
-            var departments = _departmentRepository.GetAllAsync().Result;
-            if (departments == null || !departments.Any())
-            {
-                return NotFound();
-            }
-            return View("GetDepartments",departments);
+            var departments = await _departmentRepository.GetAllAsync();
+            
+            return View("GetDepartments", departments);
         }
+
         public IActionResult GetDepartmentByID(int id)
         {
             var department = _departmentRepository.GetByIdAsync(id).Result;
@@ -68,57 +66,52 @@ namespace universityManagementSys.wwwroot
         {
             return View("AddDepartment");
         }
-        public IActionResult CreateDepartment(Department department)
+        public async Task<IActionResult> CreateDepartment(Department department)
         {
-            
-                _departmentRepository.AddAsync(department).Wait();
-                _departmentRepository.SaveAsync().Wait();
-                TempData["Success"] = "Department added successfully!";
-                return RedirectToAction("GetAllDepartments");
-            
+            await _departmentRepository.AddAsync(department);
+            await _departmentRepository.SaveAsync();
+            TempData["Success"] = "Department added successfully!";
+            return RedirectToAction("GetAllDepartments");
         }
-        public IActionResult Edit(int id)
+
+
+        public async Task<IActionResult> Edit(int id)
         {
 
-            var department = _departmentRepository.GetByIdAsync(id).Result;
+            var department = await _departmentRepository.GetByIdAsync(id);
             if (department == null)
             {
                 return NotFound();
             }
-            return View(department);
+            return View("EditDepartment", department);
         }
-        public IActionResult EditDepartment(Department department)
+        public async Task<IActionResult> EditDepartment(Department department)
         {
-            if (!ModelState.IsValid)
-            {
-                _departmentRepository.UpdateAsync(department.ID, department).Wait();
-                _departmentRepository.SaveAsync().Wait();
-                TempData["Success"] = "Department updated successfully!";
-                return RedirectToAction("GetAllDepartments");
-            }
-            TempData["Error"] = "Failed to update department. Please check the details and try again.";
-            return View("Edit", department);
+            await _departmentRepository.UpdateAsync(department.ID, department);
+            await _departmentRepository.SaveAsync();
+            TempData["Success"] = "Department updated successfully!";
+            return RedirectToAction("GetAllDepartments");
         }
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
           
-            var department =_departmentRepository.GetByIdAsync(id).Result;
+            var department = await _departmentRepository.GetByIdAsync(id);
             if (department == null)
             {
                 return NotFound();
             }
-            return View(department);
+            return View("DeleteDepartment", department);
         }
-        public IActionResult DeleteDepartmentConfirmed(int id)
+        public async Task<IActionResult> DeleteDepartmentConfirmed(int id)
         {
-            var department = _departmentRepository.GetByIdAsync(id).Result;
+            var department = await _departmentRepository.GetByIdAsync(id);
             if (department == null)
             {
                 return NotFound();
             }
 
-            _departmentRepository.DeleteAsync(id).Wait();
-            _departmentRepository.SaveAsync().Wait();
+            await _departmentRepository.DeleteAsync(id);
+            await _departmentRepository.SaveAsync();
             TempData["Success"] = "Department deleted successfully!";
             return RedirectToAction("GetAllDepartments");
         }

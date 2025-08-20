@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 using universityManagementSys.Data;
 using universityManagementSys.Filters;
 using universityManagementSys.Models;
@@ -50,7 +51,7 @@ namespace universityManagementSys.Controllers
         }
         public IActionResult Create()
         {
-            var model = new DataViewModel
+            var model = new dataViewModel
             {
                 PageTitle = "Add instructor",
                 WelcomeMessage = "Please fill in the instructor details.",
@@ -61,58 +62,53 @@ namespace universityManagementSys.Controllers
         }
         public async Task<IActionResult> CreateInstructor(Instructor instructor)
         {
-            
-                await _instructorRepository.AddAsync(instructor);
-                await _instructorRepository.SaveAsync();
-                TempData["Success"] = "instructor added successfully!";
-                return RedirectToAction("GetAllInstructors");
-           
+
+            await _instructorRepository.AddAsync(instructor);
+            await _instructorRepository.SaveAsync();
+            TempData["Success"] = "instructor added successfully!";
+            return RedirectToAction("GetAllInstructors");
+
         }
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var instructor = _instructorRepository.GetByIdAsync(id).Result;
+            var instructor = await _instructorRepository.GetByIdAsync(id);
 
             if (instructor == null)
             {
                 return NotFound();
             }
-            return View(instructor);
+            return View("EditInstructor", instructor);
         }
-        public IActionResult EditInstructor(Instructor instructor)
+        public async Task<IActionResult> EditInstructor(Instructor instructor)
         {
-            if (ModelState.IsValid)
-            {
-                _instructorRepository.UpdateAsync(instructor).Wait();
-                _instructorRepository.SaveAsync().Wait();
-                TempData["Success"] = "Instructor updated successfully!";
-                return RedirectToAction("GetAllInstructors");
-            }
-           
-                TempData["Error"] = "Invalid instructor data.";
-                return View("Edit", instructor);
+            await _instructorRepository.UpdateAsync(instructor);
+            await _instructorRepository.SaveAsync();
+            TempData["Success"] = "Instructor updated successfully!";
 
-
+            return RedirectToAction("GetAllInstructors");
         }
-        public IActionResult Delete(int id)
+
+        public async Task<IActionResult> Delete(int id)
         {
   
-            var instructor = _instructorRepository.GetByIdAsync(id).Result;
+            var instructor = await _instructorRepository.GetByIdAsync(id);
             if (instructor == null)
             {
                 return NotFound();
             }
-            return View(instructor);
+            return View("DeleteInstructor", instructor);
         }
-        public IActionResult DeleteInastructorConfirmed(int id)
+
+        public async Task<IActionResult> DeleteInstructorConfirmed(int id)
         {
-            var instructor = _instructorRepository.GetByIdAsync(id).Result;
+            var instructor = await _instructorRepository.GetByIdAsync(id);
             if (instructor == null)
             {
                 return NotFound();
             }
 
-            _instructorRepository.DeleteAsync(id).Wait();
-            _instructorRepository.SaveAsync().Wait();
+            await _instructorRepository.DeleteAsync(id);
+            await _instructorRepository.SaveAsync();
             TempData["Success"] = "Instructor deleted successfully!";
             return RedirectToAction("GetAllInstructors");
         }

@@ -55,7 +55,6 @@ namespace universityManagementSys.Repositories.Implementations
             semesterToBeUpdated.StartDate = semester.StartDate;
             semesterToBeUpdated.EndDate = semester.EndDate;
 
-            _context.semesters.Update(semester);
             await SaveAsync();
 
             return true;

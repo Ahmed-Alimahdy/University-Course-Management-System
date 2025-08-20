@@ -1,54 +1,81 @@
-﻿@model universityManagementSys.ModelView.DataViewModel
+﻿@model universityManagementSys.ModelView.dataViewModel
 
 @{
-    ViewData["Title"] = Model.PageTitle;
+    ViewData["Title"] = Model.PageTitle ?? "Add Instructor";
 }
 
-<h2>@Model.PageTitle</h2>
-<p>@Model.WelcomeMessage</p>
-
-<form asp-action="CreateInstructor" method="post">
-    <div class="form-group">
-        <label asp-for="instructor.FirstName"></label>
-        <input asp-for="instructor.FirstName" class="form-control" />
-        <span asp-validation-for="instructor.FirstName" class="text-danger"></span>
+<div class="container mt-5">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary">👨‍🏫 @Model.PageTitle</h1>
+        <p class="text-muted">@Model.WelcomeMessage</p>
+        <hr class="w-25 mx-auto" />
     </div>
 
-    <div class="form-group">
-        <label asp-for="instructor.LastName"></label>
-        <input asp-for="instructor.LastName" class="form-control" />
-        <span asp-validation-for="instructor.LastName" class="text-danger"></span>
+    <!-- Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <form asp-action="CreateInstructor" method="post">
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label asp-for="instructor.FirstName" class="form-label fw-semibold"></label>
+                            <input asp-for="instructor.FirstName" class="form-control" />
+                            <span asp-validation-for="instructor.FirstName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label asp-for="instructor.LastName" class="form-label fw-semibold"></label>
+                            <input asp-for="instructor.LastName" class="form-control" />
+                            <span asp-validation-for="instructor.LastName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label asp-for="instructor.Title" class="form-label fw-semibold"></label>
+                            <input asp-for="instructor.Title" class="form-control" />
+                            <span asp-validation-for="instructor.Title" class="text-danger"></span>
+                        </div>
+
+                        <!-- Hire Date -->
+                        <div class="mb-3">
+                            <label asp-for="instructor.HireDate" class="form-label fw-semibold"></label>
+                            <input asp-for="instructor.HireDate" type="date" class="form-control" />
+                            <span asp-validation-for="instructor.HireDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="instructor.Email" class="form-label fw-semibold"></label>
+                            <input asp-for="instructor.Email" type="email" class="form-control" />
+                            <span asp-validation-for="instructor.Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="mb-3">
+                            <label asp-for="instructor.PhoneNum" class="form-label fw-semibold"></label>
+                            <input asp-for="instructor.PhoneNum" class="form-control" />
+                            <span asp-validation-for="instructor.PhoneNum" class="text-danger"></span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="GetAllInstructors"
+                               class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">
+                                ⬅️ Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success px-4 rounded-pill shadow-sm">
+                                ➕ Add Instructor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="instructor.Title"></label>
-        <input asp-for="instructor.Title" class="form-control" />
-        <span asp-validation-for="instructor.Title" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="instructor.HireDate"></label>
-        <input asp-for="instructor.HireDate" type="date" class="form-control" />
-        <span asp-validation-for="instructor.HireDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="instructor.Email"></label>
-        <input asp-for="instructor.Email" type="email" class="form-control" />
-        <span asp-validation-for="instructor.Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="instructor.PhoneNum"></label>
-        <input asp-for="instructor.PhoneNum" class="form-control" />
-        <span asp-validation-for="instructor.PhoneNum" class="text-danger"></span>
-    </div>
-
-
-
-    <button type="submit" class="btn btn-primary">Add</button>
-    <a asp-action="GetAllInstructors" class="btn btn-secondary">Cancel</a>
-</form>
+</div>
 
 @section Scripts {
     @{
