@@ -131,7 +131,14 @@ namespace universityManagementSys.Controllers
             TempData["Success"] = "Account created successfully. Please login.";
             return RedirectToAction("Login");
         }
-        public async Task<IActionResult> GetStudentForm() { var departments = await departmentRepository.GetAllAsync(); ViewBag.Departments = new SelectList(departments, "ID", "Name"); return PartialView("StudentRegisterForm", new RegisterViewModel { student = new Student(), Role = "Student" }); }
+
+        public async Task<IActionResult> GetStudentForm() 
+        {   
+            var departments = await departmentRepository.GetAllAsync(); 
+            ViewBag.Departments = new SelectList(departments, "ID", "Name"); 
+            return PartialView("StudentRegisterForm", new RegisterViewModel { student = new Student(), Role = "Student" });
+        }
+        
         public async Task<IActionResult> GetStudentProfile(int id)
         {
             var student = await studentRepository.GetByIdAsync(id);
@@ -143,8 +150,6 @@ namespace universityManagementSys.Controllers
         public async Task<IActionResult> GetIDProfile(int id)
         {
             var student = await studentRepository.GetByIdAsync(id);
-           
-
             
             ViewBag.Departments = new SelectList(await departmentRepository.GetAllAsync(), "ID", "Name");
 
@@ -155,11 +160,9 @@ namespace universityManagementSys.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProfile(Student student)
         {
-       
-
             await studentRepository.UpdateAsync(student);
 
-            return RedirectToAction("StudentProfile", new { id = student.ID });
+            return RedirectToAction("GetStudentProfile", new { id = student.ID });
         }
 
 
