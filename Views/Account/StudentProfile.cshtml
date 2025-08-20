@@ -72,9 +72,8 @@
 
         <div class="mt-3">
             <a asp-action="GetIDProfile" asp-route-id="@Model.ID" class="btn btn-primary">Edit Profile</a>
-            <a asp-action="AssignCourseToStudentProfile" asp-route-id=@Model.ID
-               class="btn btn-primary btn-sm">
-                Assign course
+            <a asp-controller="Account" asp-action="AssignCourseToStudent" asp-route-id="@Model.ID" class="btn btn-primary">
+                Assign Course
             </a>
             <a asp-action="Logout" class="btn btn-danger">Logout</a>
         </div>
