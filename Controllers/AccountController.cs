@@ -122,8 +122,15 @@ namespace universityManagementSys.Controllers
             {
                 return RedirectToAction("AdminDashBoard");
             }
+            if (newUser.Role =="Student")
+            {
+                return RedirectToAction("GetStudentProfile",newUser.student?.ID);
+            }
+            if(newUser.Role =="Instructor")
+            {
+                return RedirectToAction("GetInstructorProfile", newUser.instructor?.ID);
+            }
 
-           
             TempData["Success"] = "Account created successfully. Please login.";
             return RedirectToAction("Login");
         }
@@ -138,12 +145,21 @@ namespace universityManagementSys.Controllers
         public async Task<IActionResult> GetStudentProfile(int id)
         {
             var student = await studentRepository.GetByIdAsync(id);
-           
+            if (student == null)
+            {
+                TempData["Error"] = "Student not found!";
+                return RedirectToAction("GetAllStudents");
+            }
+
+            
+            var courses = await courseRepository.GetCoursesForDropDownLists();
+            ViewBag.Courses = new SelectList(courses, "ID", "Name");
+
             return View("StudentProfile", student);
         }
 
        
-        public async Task<IActionResult> EditProfile(int id)
+        public async Task<IActionResult> GetIDProfile(int id)
         {
             var student = await studentRepository.GetByIdAsync(id);
             
@@ -162,22 +178,35 @@ namespace universityManagementSys.Controllers
         }
 
 
-        public async Task<IActionResult> AssignCourseToStudentProfile(int id)
+        public IActionResult AssignCourseToStudent(int id)
         {
-            var student = await studentRepository.GetByIdForAssignCourseAsync(id);
-            if (student == null)
-            {
-                return NotFound();
-            }
+
+            var student = studentRepository.GetByIdForAssignCourseAsync(id).Result;
+           
+
+
             if (HttpContext.Items.ContainsKey("ErrorMessage"))
             {
                 TempData["Error"] = HttpContext.Items["ErrorMessage"];
             }
+
             var courses = courseRepository.GetCoursesForDropDownLists().Result;
             ViewBag.Courses = new SelectList(courses, "ID", "Name");
-          
+
+            var model = new dataViewModel
+            {
+                PageTitle = "Assign Course to Student",
+                WelcomeMessage = "Please select a course to assign to the student.",
+                student = student
+            };
+
             return View("AssignCourseByProfile", student);
         }
+
+
+
+        [ServiceFilter(typeof(DbExceptionFilter))]
+
         public async Task<IActionResult> AssignCourseToStudentPost(int StudentID, int CourseID)
         {
             var enrollment = new Enrollment
@@ -191,16 +220,11 @@ namespace universityManagementSys.Controllers
             await _enrollmentRepository.SaveAsync();
 
             TempData["Success"] = "Course assigned successfully!";
-            return RedirectToAction("GetStudentProfile");
-        }
-        public async Task<IActionResult> EditStudent(Student student)
-        {
+            return RedirectToAction("GetStudentProfile", new { id = StudentID });
 
-            await studentRepository.UpdateAsync(student);
-            await studentRepository.SaveAsync();
-            TempData["Success"] = "Student updated successfully!";
-            return RedirectToAction("GetAllStudents",student);
         }
+
+
         public async Task<IActionResult> GetInstructorForm() { return PartialView("InstructorRegisterForm", new RegisterViewModel { instructor = new Instructor(), Role = "Instructor" });
         }
         public async Task<IActionResult> GetInstructorProfile(int id)
@@ -284,8 +308,7 @@ namespace universityManagementSys.Controllers
                             }
                         }
 
-
-                        return RedirectToAction("Index", "Home");
+      return RedirectToAction("Index", "Home");
                     }
 
                     ModelState.AddModelError("Password", "Password is incorrect.");
@@ -297,6 +320,7 @@ namespace universityManagementSys.Controllers
 
             return View("LoginView", newUser);
         }
+
 
         //LogOut
         public async Task<IActionResult> Logout()
